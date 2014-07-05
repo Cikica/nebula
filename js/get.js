@@ -1,0 +1,272 @@
+(function ( window, module ) {
+
+	if ( window.define && window.define.amd ) { 
+		define(module)
+	} else { 
+
+		var current_scripts, this_script, module_name
+
+		current_scripts     = document.getElementsByTagName("script")
+		this_script         = current_scripts[current_scripts.length-1]
+		module_name         = this_script.getAttribute("data-module-name") || module.define.name
+		window[module_name] = module
+	}
+})( 
+	window,
+	{
+		define : {
+			name : "nebula_manager"
+		},
+
+		load : function ( nebula ) {
+			var module_paths, self
+			self         = this
+			module_paths = []
+			for ( module in nebula.map ) { 
+				module_paths = module_paths.concat( nebula.map[module] )
+			}
+			requirejs( module_paths, function () {
+				
+				var module_by_path, module_by_name
+
+				module_by_path = self.sort_module_paths_and_objects_into_module_path_map({
+					path   : module_paths,
+					object : arguments
+				})
+				module_by_name = self.sort_module_path_map_to_module_by_name_map(module_by_path)
+				for ( var path in module_by_path ) {
+					console.log( module_by_path[path] )
+				}
+			})
+		},
+
+		sort_required_modules_into_module_library : function () { 
+
+		},
+
+		get_module_from_library_if_it_exists : function ( module ) {
+			if ( module.library.hasOwnProperty( module.name ) ) { 
+				return this.get_the_closest_library_version_for_module_based_on_its_location({
+					library  : module.library[ module.name ],
+					location : module.location,
+					name     : module.name,
+				})				
+			} else { 
+				return false
+			}
+		},
+
+		get_the_closest_library_version_for_module_based_on_its_location : function ( module ) {
+			var module_path
+			module_path = module.location +"/"+ module.name
+
+			if ( module.library.hasOwnProperty(module_path) ) {
+				return module.library[module_path]
+			} else { 
+				return this.get_the_closest_library_version_for_module_based_on_its_location({
+					library  : module.library,
+					location : this.get_path_directory( module.location ),
+					name     : module.name
+				})
+			}
+		},
+
+		get_path_directory : function ( path ) {
+			var split_path, split_directory_path
+			split_path           = path.split("/")
+			split_directory_path = split_path.slice( 0, split_path.length-1 )
+			if ( split_directory_path.length > 0 ) {
+				return split_directory_path.join("/")
+			} else { 
+				return null
+			}
+		},
+
+		sort_module_path_map_to_module_by_name_map : function ( map ) {
+
+			var path, module_by_name_map
+			module_by_name_map = {}
+
+			for ( path in map ) {
+				var split_path, module_name
+				split_path  = path.split("/")
+				module_name = split_path[split_path.length-1]
+				if ( !module_by_name_map.hasOwnProperty( module_name ) ) {
+					module_by_name_map[module_name] = {}
+				}
+				module_by_name_map[module_name][path] = map[path]
+			}
+
+			return module_by_name_map
+		},
+
+		sort_module_paths_and_objects_into_module_path_map : function ( map ) {
+			
+			return this.loop({
+				array    : map.path,
+				start_at : 0,
+				into     : {},
+				if_done  : function (loop) {
+					return loop.into 
+				},
+				else_do  : function (loop) {
+					var path
+					
+					path            = loop.array[loop.start_at]
+					loop.into[path] = map.object[loop.start_at]
+
+					return { 
+						array    : loop.array,
+						into     : loop.into,
+						start_at : loop.start_at + 1,
+						if_done  : loop.if_done,
+						else_do  : loop.else_do
+					}
+				}
+			})
+		},
+		
+		make : function ( require, nebula ) {
+			
+			var self = this
+		
+			if ( require.package && require.package.length > 0 ) { 
+				this.loop({
+					array    : require.package,
+					into     : [],
+					start_at : 0,
+					if_done  : function () {},
+					else_do  : function ( loop ) {
+						
+						nebula.module_is_loading({
+							called : loop.array[loop.start_at] 
+						})
+
+						requirejs([ loop.array[loop.start_at] +"/configuration" ], function ( configuration ) {
+							self.make( configuration, nebula )
+							nebula.module_has_loaded({
+								called   : configuration.name,
+								returned : [].concat( configuration.main, configuration.module )
+							})
+						})
+						loop.start_at += 1
+						return loop
+					}
+				})
+			}
+		},
+
+		create_module_link_definition : function ( module ) {
+			return this.loop({
+				array    : module.paths,
+				start_at : 0,
+				into     : {},
+				if_done  : function (loop) {
+					return loop.into
+				},
+				else_do  : function (loop) {
+					
+					var module_reference = module.objects[loop.start_at]
+					if ( module_reference.define && module_reference.define.require ) { 
+						loop.into[loop.array[loop.start_at]] = module_reference.define.require.slice( 0 )
+					}
+					loop.start_at += 1
+					return loop
+				}
+			})
+		},
+
+		create_module_path_to_module_reference_object : function (module) {
+			var self = this
+			return this.loop({
+				array    : module.paths,
+				start_at : 0,
+				into     : {},
+				if_done  : function (loop) {
+					return loop.into
+				},
+				else_do  : function (loop) {
+					var module_name
+					// module_name = self.get_module_name_from_path({
+					// 	path     : loop.array[loop.start_at],
+					// 	start_at : 1,
+					// })
+					module_name = loop.array[loop.start_at]
+					loop.into[module_name] = module.objects[loop.start_at]
+					loop.start_at += 1
+					return loop
+				}
+			})
+		},
+
+		get_module_name_from_path : function (get) {
+
+			var name
+
+			name       = {}
+			name.parts = get.path.split("/")
+			name.parts = name.parts[name.parts.length-1].split(".")
+			name.full  = name.parts[name.parts.length-1]
+			name.parts = name.parts.slice(get.start_from)
+
+			return name
+		},
+
+		fullfil_module_requirement : function (through) {
+			return this.loop_array({
+				array    : through.required,
+				start_at : 0,
+				into     : through.module_library,
+				if_done  : function (loop) {
+					return loop.into
+				},
+				else_do  : function (loop) {
+					var required_module_name
+					required_module_name = loop.array[loop.start_at]
+					if ( through.library[required_module_name] ) {
+						loop.into[required_module_name] = through.library[required_module_name]
+					}
+					loop.start_at += 1
+					return loop
+				}
+			})
+		},
+
+		prepare_package_array_for_requirement : function ( package_array ) { 
+			return this.loop({
+				array    : package_array,
+				into     : [],
+				start_at : 0,
+				if_done  : function (loop) { 
+					return loop.into
+				},
+				else_do : function (loop) { 
+					return { 
+						array    : loop.array,
+						into     : loop.into.concat([
+							loop.array[loop.start_at] +"/get",
+							loop.array[loop.start_at] +"/configuration"
+						]),
+						start_at : loop.start_at + 1,
+						if_done  : loop.if_done,
+						else_do  : loop.else_do
+					}
+				}
+			})
+		},
+
+		loop : function (loop) {
+			if ( loop.start_at >= loop.array.length ) {
+				return loop.if_done(loop)
+			} else {
+				return this.loop(loop.else_do({
+					array    : loop.array.slice( 0 ),
+					start_at : loop.start_at,
+					into     : loop.into,
+					if_done  : loop.if_done,
+					else_do  : loop.else_do
+				}))
+			}
+		},
+	}
+)
