@@ -40,7 +40,46 @@
 			})
 		},
 
-		sort_required_modules_into_module_library : function () { 
+		get_required_modules_as_a_module_library_based_on_definition : function ( module ) {
+			var library = {}
+			if ( !module.definition.require || module.definition.require.length === 0 ) { 
+				return library
+			} else {
+				
+			}
+		},
+
+		get_required_modules_from_map_by_name : function ( sort ) {
+
+			var module, module_name, modules_left_to_require
+
+			module_name             = sort.require.slice(sort.require.length-1)
+			modules_left_to_require = this.remove_last_member_of_array_and_return_leftover( sort.require )
+			module                  = this.get_module_from_library_if_it_exists({
+				name     : module_name,
+				location : sort.location,
+				library  : sort.map_by_name
+			})
+
+			if ( module === false ) {
+				throw new Error("Module "+ module_name +" does not exist in this library compilation check to see if it has been mis spelt")
+			}
+
+			var library = {
+				name   : sort.into.name.concat( module_name ),
+				module : sort.into.module.concat( module )
+			}
+			console.log( modules_left_to_require )
+			if ( modules_left_to_require.length > 0 ) { 
+				return this.get_required_modules_from_map_by_name({
+					require     : modules_left_to_require,
+					location    : sort.location,
+					map_by_name : sort.map_by_name,
+					into        : library
+				})
+			} else { 
+				return library
+			}
 
 		},
 
@@ -51,7 +90,7 @@
 					location : module.location,
 					name     : module.name,
 				})				
-			} else { 
+			} else {
 				return false
 			}
 		},
@@ -98,6 +137,14 @@
 			}
 
 			return module_by_name_map
+		},
+
+		remove_last_member_of_array_and_return_leftover : function ( array ) {
+			if ( array.length === 1 ) {
+				return []
+			} else {
+				return array.slice(0, array.length-1 )
+			}
 		},
 
 		sort_module_paths_and_objects_into_module_path_map : function ( map ) {
