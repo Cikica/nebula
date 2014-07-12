@@ -19,12 +19,15 @@
 		},
 
 		load : function ( nebula ) {
+			
 			var module_paths, self
+
 			self         = this
 			module_paths = []
 			for ( module in nebula.map ) { 
 				module_paths = module_paths.concat( nebula.map[module] )
 			}
+
 			requirejs( module_paths, function () {
 				
 				var module_by_path, module_by_name
@@ -35,20 +38,25 @@
 				})
 				module_by_name = self.sort_module_path_map_to_module_by_name_map(module_by_path)
 				for ( var path in module_by_path ) {
-					console.log( module_by_path[path] )
+					console.log( path )
+					console.log(self.get_required_modules_as_a_module_library_based_on_definition({
+						define      : module_by_path[path].define || {},
+						location    : path,
+						map_by_name : module_by_name,
+					}) )
 				}
 			})
 		},
 
 		get_required_modules_as_a_module_library_based_on_definition : function ( module ) {
-			if ( !module.definition.require || module.definition.require.length === 0 ) { 
+			if ( !module.define.require || module.define.require.length === 0 ) { 
 				return {}
 			} else {
 				var required_modules
 				required_modules = this.get_required_modules_from_map_by_name({
-					require     : module.definition.require,
+					require     : module.define.require,
 					location    : module.location,
-					map_by_name : module.map.by_name,
+					map_by_name : module.map_by_name,
 					into        : {
 						name    : [],
 						module  : []
@@ -85,7 +93,7 @@
 		},
 
 		get_required_modules_from_map_by_name : function ( sort ) {
-			console.log ( sort )
+
 			var module, module_name, modules_left_to_require
 
 			module_name             = sort.require.slice(sort.require.length-1)
@@ -121,9 +129,9 @@
 		get_module_from_library_if_it_exists : function ( module ) {
 			if ( module.library.hasOwnProperty( module.name ) ) { 
 				return this.get_the_closest_library_version_for_module_based_on_its_location({
-					library  : module.library[ module.name ],
-					location : module.location,
-					name     : module.name,
+					library           : module.library[ module.name ],
+					location          : module.location,
+					name              : module.name
 				})				
 			} else {
 				return false
@@ -131,16 +139,23 @@
 		},
 
 		get_the_closest_library_version_for_module_based_on_its_location : function ( module ) {
+			
+			if ( module.current_location === null ) { 
+				throw new Error("The module \""+ module.name +"\" could not be found in the scope of the file \""+ module.location +"\"" )
+			}
+
 			var module_path
-			module_path = module.location +"/"+ module.name
+			module.current_location = module.current_location || module.location
+			module_path             = module.current_location +"/"+ module.name
 
 			if ( module.library.hasOwnProperty(module_path) ) {
 				return module.library[module_path]
-			} else { 
+			} else {
 				return this.get_the_closest_library_version_for_module_based_on_its_location({
-					library  : module.library,
-					location : this.get_path_directory( module.location ),
-					name     : module.name
+					library           : module.library,
+					location          : module.location,
+					name              : module.name,
+					current_location  : this.get_path_directory( module.current_location )
 				})
 			}
 		},

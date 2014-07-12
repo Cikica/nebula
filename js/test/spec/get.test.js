@@ -54,6 +54,16 @@ describe("get the closest library version for module based on its location", fun
 			name         : "morph"
 		})).toEqual( module_by_name_map.morph["js/node_maker/morph"] )	
 	})
+	// supposed to test the error buts its being a punk
+	// it("throws a fit if the module could not be found in the lexical scope of the file", function() {
+	// 	expect(module.get_the_closest_library_version_for_module_based_on_its_location({
+	// 		library      : module_by_name_map.morph,
+	// 		location     : "js/node_maker/some",
+	// 		name         : "some_stuff"
+	// 	})).toThrow()
+	// })
+
+	// need to test here better
 })
 
 describe("gets module from library if it exists", function() {
@@ -147,33 +157,27 @@ describe("get an object from combining two arrays", function() {
 describe("get required modules as module library based on definition", function() {
 	it("returns an empty object if there are no modules required", function() {
 		expect( module.get_required_modules_as_a_module_library_based_on_definition({
-			definition : {
+			define : {
 				require : []
 			},
-			map : {
-				by_path : hash_map,
-				by_name : module_by_name_map
-			}
+			map_by_name : module_by_name_map
 		})).toEqual({})
 	})
 
 	it("returns an empty object if the require key of the definition is not specified", function() {
 		expect( module.get_required_modules_as_a_module_library_based_on_definition({
-			definition  : {
+			define  : {
 			},
 		})).toEqual( {} )
 	})
 
 	it("retruns the desired modules", function() {
 		expect( module.get_required_modules_as_a_module_library_based_on_definition({
-			definition  : {
+			define  : {
 				require : ["morph", "node_maker"]
 			},
-			location : "js/node_maker",
-			map      : {
-				by_path : hash_map,
-				by_name : module_by_name_map
-			}
+			location    : "js/node_maker",
+			map_by_name : module_by_name_map,
 		})).toEqual({
 			"node_maker" : "module:js/node_maker",
 			"morph"      : "module:js/node_maker/morph"
