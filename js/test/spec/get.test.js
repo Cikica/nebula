@@ -110,6 +110,40 @@ describe("get required modules from map by name", function() {
 	})	
 })
 
+describe("get an object from combining two arrays", function() {
+	it("combines two arrays", function() {
+		expect(module.get_an_object_from_combining_two_arrays({
+			key   : ["a", "b"],
+			value : ["1", "2"] 
+		})).toEqual({
+			"a" : "1",
+			"b" : "2"
+		})
+	})
+
+	it("has reference when combining a value of objects", function() {
+		var value, key, result
+		key    = ["a", "b"]
+		value  = [{ a : 1 }, { b : 2 }]
+		result = module.get_an_object_from_combining_two_arrays({
+			key   : key,
+			value : value,
+		})
+		expect(result["a"]).toBe(value[0])
+	})
+
+	it("has no reference when combining an value of arrays", function() {
+		var value, key, result
+		key    = ["a", "b"]
+		value  = [["stuff", "1"], { b : 2 }]
+		result = module.get_an_object_from_combining_two_arrays({
+			key   : key,
+			value : value,
+		})
+		expect(result["a"]).not.toBe(value[0])	
+	});
+});
+
 describe("get required modules as module library based on definition", function() {
 	it("returns an empty object if there are no modules required", function() {
 		expect( module.get_required_modules_as_a_module_library_based_on_definition({
@@ -129,4 +163,20 @@ describe("get required modules as module library based on definition", function(
 			},
 		})).toEqual( {} )
 	})
+
+	it("retruns the desired modules", function() {
+		expect( module.get_required_modules_as_a_module_library_based_on_definition({
+			definition  : {
+				require : ["morph", "node_maker"]
+			},
+			location : "js/node_maker",
+			map      : {
+				by_path : hash_map,
+				by_name : module_by_name_map
+			}
+		})).toEqual({
+			"node_maker" : "module:js/node_maker",
+			"morph"      : "module:js/node_maker/morph"
+		})	
+	});
 })

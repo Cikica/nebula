@@ -41,16 +41,51 @@
 		},
 
 		get_required_modules_as_a_module_library_based_on_definition : function ( module ) {
-			var library = {}
 			if ( !module.definition.require || module.definition.require.length === 0 ) { 
-				return library
+				return {}
 			} else {
-				
+				var required_modules
+				required_modules = this.get_required_modules_from_map_by_name({
+					require     : module.definition.require,
+					location    : module.location,
+					map_by_name : module.map.by_name,
+					into        : {
+						name    : [],
+						module  : []
+					},
+				})
+				return this.get_an_object_from_combining_two_arrays({
+					key   : required_modules.name,
+					value : required_modules.module
+				})
+			}
+		},
+
+		get_an_object_from_combining_two_arrays : function ( object ) {
+
+			var key, value
+			object.set = object.set || {}
+			key        = this.remove_last_member_of_array_and_return_leftover( object.key )
+			value      = this.remove_last_member_of_array_and_return_leftover( object.value )
+			if ( object.value[object.value.length-1].constructor === Array ) {
+				object.set[object.key.slice(object.key.length-1)] = object.value[object.value.length-1].slice(0)
+			} else { 
+				object.set[object.key.slice(object.key.length-1)] = object.value[object.value.length-1]
+			}
+
+			if ( key.length === 0 ) { 
+				return object.set
+			} else {
+				return this.get_an_object_from_combining_two_arrays({
+					key   : key,
+					value : value,
+					set   : object.set
+				})
 			}
 		},
 
 		get_required_modules_from_map_by_name : function ( sort ) {
-
+			console.log ( sort )
 			var module, module_name, modules_left_to_require
 
 			module_name             = sort.require.slice(sort.require.length-1)
@@ -69,7 +104,7 @@
 				name   : sort.into.name.concat( module_name ),
 				module : sort.into.module.concat( module )
 			}
-			console.log( modules_left_to_require )
+
 			if ( modules_left_to_require.length > 0 ) { 
 				return this.get_required_modules_from_map_by_name({
 					require     : modules_left_to_require,
