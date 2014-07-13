@@ -1,5 +1,15 @@
 define({
 
+	define : { 
+		// disallow : [],
+		allow : ["default_sorter"],
+		allow : ["../default_sorter"],
+		allow : "<(n)(/<name>)",  // parent
+		allow : ">(n)(/<name>)",  // children
+		allow : "*",              // global
+		allow : ".",              // local
+	},
+
 	copy : function (copy) {
 		if ( copy.what.constructor === Array && copy.object_array ) {
 			return this.index_loop({

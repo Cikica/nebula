@@ -184,3 +184,45 @@ describe("get required modules as module library based on definition", function(
 		})	
 	});
 })
+
+describe("is path allowed to access module", function() {
+	it("understands the [\"local_module_name\"] notation ", function() {
+		expect(module.is_path_allowed_to_access_module({
+			path   : "js/path/main",
+			module : {
+				location   : "js/path/stuff",
+				premission : "main"
+			}
+		})).toBe(true)
+	})
+
+	it("understands the \"<(n)(<name>)\" notation", function() {
+		expect(module.is_path_allowed_to_access_module({
+			path   : "js/path/main",
+			module : {
+				location   : "js/path/stuff",
+				premission : "main"
+			}
+		})).toBe(true)
+	})
+
+	it("understands the \"*\" notation", function() {
+		expect(module.is_path_allowed_to_access_module({
+			path   : "js/path/main",
+			module : {
+				location   : "js/path/stuff",
+				premission : "main"
+			}
+		})).toBe(true)
+	})
+
+	it("understands the \".\" notation", function() {
+		expect(module.is_path_allowed_to_access_module({
+			path   : "js/path/main",
+			module : {
+				location   : "js/path/stuff",
+				premission : "main"
+			}
+		})).toBe(true)
+	})
+})
