@@ -83,7 +83,26 @@
 
 		is_path_allowed_to_access_module : function ( allow ) {
 
-			return true
+			if ( allow.module.premission === "*" ) {
+				return true
+			}
+
+			if ( allow.module.premission === "." )  { 
+				return ( this.get_path_directory( allow.path ) === this.get_path_directory( allow.module.location ) )
+			}
+
+			if ( allow.module.premission === ">" ) {
+				return ( allow.path.indexOf( this.get_path_directory( allow.module.location ) ) === 0 )
+			}
+
+			if ( allow.module.premission !== "." && allow.module.premission !== "." ) { 
+
+				var requesting_module_name
+
+				requesting_module_name = allow.path.split("/")
+				requesting_module_name = requesting_module_name[requesting_module_name.length-1]
+				return ( requesting_module_name === allow.module.premission )
+			}
 		},
 
 		get_required_modules_as_a_module_library_based_on_definition : function ( module ) {

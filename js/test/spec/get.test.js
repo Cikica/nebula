@@ -186,37 +186,72 @@ describe("get required modules as module library based on definition", function(
 })
 
 describe("is path allowed to access module", function() {
-	it("understands the [\"local_module_name\"] notation ", function() {
+
+	it("understands the \"*\" global notation", function() {
 		expect(module.is_path_allowed_to_access_module({
 			path   : "js/path/main",
 			module : {
 				location   : "js/path/stuff",
-				premission : "main"
+				premission : "*"
 			}
-		})).toBe(true)
+		})).toEqual(true)
 	})
 
-	it("understands the \"<(n)(<name>)\" notation", function() {
+	it("understands the \".\" local notation", function() {
 		expect(module.is_path_allowed_to_access_module({
 			path   : "js/path/main",
 			module : {
 				location   : "js/path/stuff",
-				premission : "main"
+				premission : "."
 			}
 		})).toBe(true)
+
+		expect(module.is_path_allowed_to_access_module({
+			path   : "js/stuff/main",
+			module : {
+				location   : "js/path/stuff",
+				premission : "."
+			}
+		})).toBe(false)
 	})
 
-	it("understands the \"*\" notation", function() {
+	it("understands the \">\" children only notation", function() {
+
 		expect(module.is_path_allowed_to_access_module({
-			path   : "js/path/main",
+			path   : "js/path/some/folder/main",
 			module : {
 				location   : "js/path/stuff",
-				premission : "main"
+				premission : ">"
 			}
 		})).toBe(true)
+
+		expect(module.is_path_allowed_to_access_module({
+			path   : "js/path/some/folder/main",
+			module : {
+				location   : "js/",
+				premission : ">"
+			}
+		})).toBe(true)
+
+		expect(module.is_path_allowed_to_access_module({
+			path   : "js/folder/main",
+			module : {
+				location   : "js/path/stuff",
+				premission : ">"
+			}
+		})).toBe(false)
+
+		expect(module.is_path_allowed_to_access_module({
+			path   : "js/main",
+			module : {
+				location   : "js/path/stuff",
+				premission : ">"
+			}
+		})).toBe(false)
 	})
 
-	it("understands the \".\" notation", function() {
+	it("understands the \"module_name\" notation ", function() {
+
 		expect(module.is_path_allowed_to_access_module({
 			path   : "js/path/main",
 			module : {
@@ -224,5 +259,21 @@ describe("is path allowed to access module", function() {
 				premission : "main"
 			}
 		})).toBe(true)
+
+		expect(module.is_path_allowed_to_access_module({
+			path   : "js/path/some_name",
+			module : {
+				location   : "js/path/stuff",
+				premission : "main"
+			}
+		})).toBe(false)
+
+		expect(module.is_path_allowed_to_access_module({
+			path   : "js/some_name",
+			module : {
+				location   : "js/path/stuff",
+				premission : "main"
+			}
+		})).toBe(false)
 	})
 })
