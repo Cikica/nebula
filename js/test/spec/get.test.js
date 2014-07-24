@@ -275,6 +275,14 @@ describe("is path allowed to access module", function() {
 		})).toBe(true)
 
 		expect(module.is_path_allowed_to_access_module({
+			path : "js/node_maker",
+			module : { 
+				location   : "js/node_maker/morph",
+				premission : ">"
+			}
+		})).toBe(false)
+
+		expect(module.is_path_allowed_to_access_module({
 			path   : "js/folder/main",
 			module : {
 				location   : "js/path/stuff",
@@ -350,5 +358,67 @@ describe("get modules which are allowed from library based on location", functio
 				stuff : "ss"
 			}
 		})
-	})	
+	})
+
+	it("it gets all the modules", function() {
+		expect(module.get_modules_which_are_allowed_from_library_based_on_location({
+			path    : "js/node_maker",
+			library : {
+				"node_maker" : {
+					path   : "js/node_maker",
+					object : {
+						define : {
+							allow : "."
+						},
+						stuff : "ss"
+					}
+				},
+				"morph"      : {
+					path   : "js/node_maker/morph",
+					object : {
+						define : {
+							allow : "*"
+						}
+					}
+				}
+			},
+		})).toEqual({
+			"node_maker" : {
+				define : {
+					allow : "."
+				},
+				stuff : "ss"
+			},
+			"morph" : {
+				define : {
+					allow : "*"
+				}
+			}
+		})
+	})
+
+	it("gets none of the modules for they art invalid", function() {
+		expect(module.get_modules_which_are_allowed_from_library_based_on_location({
+			path    : "js/node_maker",
+			library : {
+				"node_maker" : {
+					path   : "js/node_maker",
+					object : {
+						define : {
+							allow : "some_name"
+						},
+						stuff : "ss"
+					}
+				},
+				"morph"      : {
+					path   : "js/node_maker/morph",
+					object : {
+						define : {
+							allow : ">"
+						}
+					}
+				}
+			},
+		})).toEqual({})		
+	})
 })

@@ -84,10 +84,13 @@
 			})
 		},
 
-		get_modules_which_are_allowed_from_library_based_on_location : function ( get ) { 
+		get_modules_which_are_allowed_from_library_based_on_location : function ( get ) {
+
 			var module_name, allowed_library
+
 			allowed_library = {}
 			for ( module_name in get.library ) {
+
 				if ( get.library.hasOwnProperty( module_name ) ) {
 					var this_module_has_premission_to_be_used
 					this_module_has_premission_to_be_used = this.is_path_allowed_to_access_module({
@@ -120,7 +123,9 @@
 			}
 
 			if ( allow.module.premission === ">" ) {
-				return ( allow.path.indexOf( this.get_path_directory( allow.module.location ) ) === 0 )
+				return ( 
+					this.get_path_directory( allow.path ).indexOf( this.get_path_directory( allow.module.location ) ) === 0 
+				)
 			}
 
 			if ( allow.module.premission !== "." && allow.module.premission !== "." ) { 
