@@ -3,7 +3,8 @@ define({
 	define : {
 		require : [
 			"morphism",
-			"node_maker"
+			"node_maker",
+			"main"
 		]
 	},
 

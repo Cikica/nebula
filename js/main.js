@@ -5,11 +5,9 @@ define({
 		// require : ["morphism"]
 	},
 
-	make : function (extend) {
-		console.log(extend)
+	make : function () {
+		console.log(window)
+		console.log("entrude young messenger")
 	}
-
-	// define components that are part of it # think will change this so anything is requirable
-	// add_component : [],
-	// components : {},
+	
 })

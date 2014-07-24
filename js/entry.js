@@ -1,11 +1,11 @@
 window.nebula = (function ( nebula ) {
 
-	var begin_loading = function () {
+	var begin_loading = function ( load ) {
 
 		requirejs([ 
-			"js/get", 
-			"js/nebula", 
-			"js/configuration"
+			load.directory +"/get", 
+			load.directory +"/nebula", 
+			load.directory +"/configuration"
 		], function ( get, nebula, configuration ) {
 
 			var sorter
@@ -15,11 +15,18 @@ window.nebula = (function ( nebula ) {
 				called : configuration.name
 			})
 
-			sorter.call_this_method_upon_load_completion( function ( instructions ) {
-				get.require_package_modules( instructions )
+			sorter.call_this_method_upon_load_completion( function ( load_map ) {
+				get.require_package_modules({
+					load_map       : load_map,
+					root_directory : load.directory
+				})
 			})
 
-			get.make( configuration, sorter )
+			get.make({
+				require        : configuration, 
+				sort           : sorter,
+				root_directory : load.directory
+			})
 
 			sorter.module_has_loaded({
 				called   : configuration.name,
@@ -29,7 +36,9 @@ window.nebula = (function ( nebula ) {
 	}
 
 	if ( typeof window.define === 'function' && window.define.amd) {
-		begin_loading( )
+		begin_loading({
+			directory : "js"
+		})
 	} else {
 		var require_js_script
 		require_js_script        = document.createElement("script")

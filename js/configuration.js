@@ -8,7 +8,4 @@ define({
 		"js/library/default_sorter",
 		"js/library/node_maker",
 	],
-	package : [ 
-		"js/node_maker"
-	],
 })

@@ -18,14 +18,14 @@
 			name : "nebula_manager"
 		},
 
-		make : function ( require, nebula ) {
+		make : function ( package ) {
 			
 			var self
 			self = this
 		
-			if ( require.package && require.package.length > 0 ) {
+			if ( package.require.package && package.require.package.length > 0 ) {
 				this.loop({
-					array    : require.package,
+					array    : package.require.package,
 					into     : [],
 					start_at : 0,
 					if_done  : function () {},
@@ -36,11 +36,13 @@
 						})
 
 						requirejs([ loop.array[loop.start_at] +"/configuration" ], function ( configuration ) {
+
 							self.make( configuration, nebula )
-							nebula.module_has_loaded({
+							package.sort.module_has_loaded({
 								called   : configuration.name,
 								returned : [].concat( configuration.main, configuration.module )
 							})
+
 						})
 
 						loop.start_at += 1
@@ -50,14 +52,14 @@
 			}
 		},
 
-		require_package_modules : function ( load_map ) {
+		require_package_modules : function ( require ) {
 
 			var module_paths, self
 			self         = this
 			module_paths = []
 
-			for ( module in load_map ) { 
-				module_paths = module_paths.concat( load_map[module] )
+			for ( module in require.load_map ) { 
+				module_paths = module_paths.concat( require.load_map[module] )
 			}
 
 			requirejs( module_paths, function () {
@@ -69,18 +71,26 @@
 					object : arguments
 				})
 				module_by_name = self.sort_module_path_map_to_module_by_name_map( module_by_path )
+				
 				for ( var path in module_by_path ) {
 
-					var library
-					library = self.get_required_modules_as_a_module_library_based_on_definition({
+					var pure_library, premited_library
+
+					pure_library = self.get_required_modules_as_a_module_library_based_on_definition({
 						define      : module_by_path[path].define || {},
 						location    : path,
 						map_by_name : module_by_name,
 					})
+					premited_library = self.get_modules_which_are_allowed_from_library_based_on_location({
+						path    : path,
+						library : pure_library
+					})
 
-					// console.log( path )
-					// console.log( library )
+					module_by_path[path].library = premited_library
 				}
+				// can put a filter in here that filters all the global variables that decide 
+				// what does into the the app
+				module_by_path[require.root_directory +"/main"].make.call({})
 			})
 		},
 
@@ -97,7 +107,11 @@
 						path   : get.path,
 						module : {
 							location   : get.library[module_name].path,
-							premission : get.library[module_name].object.define.allow
+							premission : ( 
+								get.library[module_name].object.define ? 
+									get.library[module_name].object.define.allow : 
+									{}
+							)
 						}
 					})
 					if ( this_module_has_premission_to_be_used ) { 
