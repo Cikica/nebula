@@ -36,7 +36,10 @@ describe("get the closest library version for module based on its location", fun
 			library      : module_by_name_map.morph,
 			location     : "js/node_maker",
 			name         : "morph"
-		})).toEqual( module_by_name_map.morph["js/node_maker/morph"] )
+		})).toEqual({
+			path   : "js/node_maker/morph",
+			object : module_by_name_map.morph["js/node_maker/morph"]
+		})
 	})
 
 	it("finds the later closest library verison for module based on its location", function() {
@@ -44,7 +47,10 @@ describe("get the closest library version for module based on its location", fun
 			library      : module_by_name_map.morph,
 			location     : "js/node_maker/other/somethingelse/some",
 			name         : "morph"
-		})).toEqual( module_by_name_map.morph["js/node_maker/other/morph"] )	
+		})).toEqual({
+			path   : "js/node_maker/other/morph",
+			object : module_by_name_map.morph["js/node_maker/other/morph"] 
+		})	
 	})
 
 	it("finds the closest library verison for module based on its location in an unrelated context", function() {
@@ -52,7 +58,10 @@ describe("get the closest library version for module based on its location", fun
 			library      : module_by_name_map.morph,
 			location     : "js/node_maker/some",
 			name         : "morph"
-		})).toEqual( module_by_name_map.morph["js/node_maker/morph"] )	
+		})).toEqual({ 
+			path   : "js/node_maker/morph",
+			object : module_by_name_map.morph["js/node_maker/morph"]
+		})	
 	})
 	// supposed to test the error buts its being a punk
 	// it("throws a fit if the module could not be found in the lexical scope of the file", function() {
@@ -73,7 +82,10 @@ describe("gets module from library if it exists", function() {
 			library  : module_by_name_map,
 			location : "js/node_maker",
 			name     : "morph"
-		})).toBe( module_by_name_map.morph["js/node_maker/morph"] )
+		})).toEqual({
+			path   : "js/node_maker/morph",
+			object : module_by_name_map.morph["js/node_maker/morph"]
+		})
 	})
 
 	it("returns false if module does not exist", function() {
@@ -113,14 +125,20 @@ describe("get required modules from map by name", function() {
 				"morph"
 			],
 			module : [
-				"module:js/node_maker",
-				"module:js/node_maker/morph"
+				{
+					path   : "js/node_maker",
+					object : "module:js/node_maker"
+				},
+				{
+					path   : "js/node_maker/morph",
+					object : "module:js/node_maker/morph"
+				}
 			]
 		})
 	})	
 })
 
-describe("get an object from combining two arrays", function() {
+describe( "get an object from combining two arrays", function() {
 	it("combines two arrays", function() {
 		expect(module.get_an_object_from_combining_two_arrays({
 			key   : ["a", "b"],
@@ -151,8 +169,8 @@ describe("get an object from combining two arrays", function() {
 			value : value,
 		})
 		expect(result["a"]).not.toBe(value[0])	
-	});
-});
+	})
+})
 
 describe("get required modules as module library based on definition", function() {
 
@@ -180,8 +198,14 @@ describe("get required modules as module library based on definition", function(
 			location    : "js/node_maker",
 			map_by_name : module_by_name_map,
 		})).toEqual({
-			"node_maker" : "module:js/node_maker",
-			"morph"      : "module:js/node_maker/morph"
+			"node_maker" : {
+				path   : "js/node_maker",
+				object : "module:js/node_maker"
+			},
+			"morph"      : {
+				path   : "js/node_maker/morph",
+				object : "module:js/node_maker/morph"
+			}
 		})	
 	})
 })

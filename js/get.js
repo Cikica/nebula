@@ -78,8 +78,8 @@
 						map_by_name : module_by_name,
 					})
 
-					console.log( path )
-					console.log( library )
+					// console.log( path )
+					// console.log( library )
 				}
 			})
 		},
@@ -228,13 +228,16 @@
 			module_path             = module.current_location +"/"+ module.name
 
 			if ( module.library.hasOwnProperty(module_path) ) {
-				return module.library[module_path]
+				return {
+					path   : module_path,
+					object : module.library[module_path]
+				}
 			} else {
 				return this.get_the_closest_library_version_for_module_based_on_its_location({
-					library           : module.library,
-					location          : module.location,
-					name              : module.name,
-					current_location  : this.get_path_directory( module.current_location )
+					library          : module.library,
+					location         : module.location,
+					name             : module.name,
+					current_location : this.get_path_directory( module.current_location )
 				})
 			}
 		},
