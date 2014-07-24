@@ -212,6 +212,22 @@ describe("get required modules as module library based on definition", function(
 
 describe("is path allowed to access module", function() {
 
+	it("has a default notatation that comes down to \".\" local notation", function() {
+		expect(module.is_path_allowed_to_access_module({
+			path   : "js/path/main",
+			module : {
+				location   : "js/path/stuff"
+			}
+		})).toBe(true)
+
+		expect(module.is_path_allowed_to_access_module({
+			path   : "js/stuff/main",
+			module : {
+				location   : "js/path/stuff"
+			}
+		})).toBe(false)	
+	})
+
 	it("understands the \"*\" global notation", function() {
 		expect(module.is_path_allowed_to_access_module({
 			path   : "js/path/main",
@@ -301,4 +317,38 @@ describe("is path allowed to access module", function() {
 			}
 		})).toBe(false)
 	})
+})
+
+describe("get modules which are allowed from library based on location", function() {
+	it("it gets the desired modules discards the others", function() {
+		expect(module.get_modules_which_are_allowed_from_library_based_on_location({
+			path    : "js/node_maker",
+			library : {
+				"node_maker" : {
+					path   : "js/node_maker",
+					object : {
+						define : {
+							allow : "."
+						},
+						stuff : "ss"
+					}
+				},
+				"morph"      : {
+					path   : "js/node_maker/morph",
+					object : {
+						define : {
+							allow : "."
+						}
+					}
+				}
+			},
+		})).toEqual({
+			"node_maker" : {
+				define : {
+					allow : "."
+				},
+				stuff : "ss"
+			}
+		})
+	})	
 })

@@ -84,26 +84,32 @@
 			})
 		},
 
-		get_modules_which_are_allowed_to_be_accessed_by_from_library : function ( get ) { 
-			var module, allowed_library
+		get_modules_which_are_allowed_from_library_based_on_location : function ( get ) { 
+			var module_name, allowed_library
 			allowed_library = {}
-			for ( module in get.library ) {
-				if ( get.library.hasOwnProperty( module ) ) { 
-					// console.log(module)
-					// var this_module_has_premission_to_be_used
-					// this_module_has_premission_to_be_used = this.is_path_allowed_to_access_module({
-					// 	path   : get.path,
-					// 	module : {
-					// 		location   : "js/path/stuff",
-					// 		premission : "."
-					// 	}
-					// })
+			for ( module_name in get.library ) {
+				if ( get.library.hasOwnProperty( module_name ) ) {
+					var this_module_has_premission_to_be_used
+					this_module_has_premission_to_be_used = this.is_path_allowed_to_access_module({
+						path   : get.path,
+						module : {
+							location   : get.library[module_name].path,
+							premission : get.library[module_name].object.define.allow
+						}
+					})
+					if ( this_module_has_premission_to_be_used ) { 
+						allowed_library[module_name] = get.library[module_name].object
+					}
 				}
 			}
 			return allowed_library
 		},
 
 		is_path_allowed_to_access_module : function ( allow ) {
+
+			if ( allow.module.premission === undefined ) { 
+				allow.module.premission = "."
+			} 
 
 			if ( allow.module.premission === "*" ) {
 				return true
@@ -144,29 +150,6 @@
 				return this.get_an_object_from_combining_two_arrays({
 					key   : required_modules.name,
 					value : required_modules.module
-				})
-			}
-		},
-
-		get_an_object_from_combining_two_arrays : function ( object ) {
-
-			var key, value
-			object.set = object.set || {}
-			key        = this.remove_last_member_of_array_and_return_leftover( object.key )
-			value      = this.remove_last_member_of_array_and_return_leftover( object.value )
-			if ( object.value[object.value.length-1].constructor === Array ) {
-				object.set[object.key.slice(object.key.length-1)] = object.value[object.value.length-1].slice(0)
-			} else { 
-				object.set[object.key.slice(object.key.length-1)] = object.value[object.value.length-1]
-			}
-
-			if ( key.length === 0 ) { 
-				return object.set
-			} else {
-				return this.get_an_object_from_combining_two_arrays({
-					key   : key,
-					value : value,
-					set   : object.set
 				})
 			}
 		},
@@ -303,6 +286,29 @@
 					}
 				}
 			})
+		},
+
+		get_an_object_from_combining_two_arrays : function ( object ) {
+
+			var key, value
+			object.set = object.set || {}
+			key        = this.remove_last_member_of_array_and_return_leftover( object.key )
+			value      = this.remove_last_member_of_array_and_return_leftover( object.value )
+			if ( object.value[object.value.length-1].constructor === Array ) {
+				object.set[object.key.slice(object.key.length-1)] = object.value[object.value.length-1].slice(0)
+			} else { 
+				object.set[object.key.slice(object.key.length-1)] = object.value[object.value.length-1]
+			}
+
+			if ( key.length === 0 ) { 
+				return object.set
+			} else {
+				return this.get_an_object_from_combining_two_arrays({
+					key   : key,
+					value : value,
+					set   : object.set
+				})
+			}
 		},
 
 		loop : function (loop) {
