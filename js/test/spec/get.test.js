@@ -85,14 +85,14 @@ describe("gets module from library if it exists", function() {
 	})
 })
 
-describe("remove a member of an array and return the leftovers", function() {
+describe("remove the last member of an array and return the leftovers", function() {
 	it("does what it says on the box", function() {
 		expect( module.remove_last_member_of_array_and_return_leftover( 
 			[1,2,3] ) 
 		).toEqual( [1,2] )
 
-		expect( module.remove_last_member_of_array_and_return_leftover( 
-			[1] ) 
+		expect( 
+			module.remove_last_member_of_array_and_return_leftover( [1] ) 
 		).toEqual( [] )
 	})
 })
@@ -155,6 +155,7 @@ describe("get an object from combining two arrays", function() {
 });
 
 describe("get required modules as module library based on definition", function() {
+
 	it("returns an empty object if there are no modules required", function() {
 		expect( module.get_required_modules_as_a_module_library_based_on_definition({
 			define : {
@@ -182,7 +183,7 @@ describe("get required modules as module library based on definition", function(
 			"node_maker" : "module:js/node_maker",
 			"morph"      : "module:js/node_maker/morph"
 		})	
-	});
+	})
 })
 
 describe("is path allowed to access module", function() {

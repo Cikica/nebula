@@ -2,7 +2,8 @@ define({
 
 	define : {
 		require : [
-			"morphism"
+			"morphism",
+			"node_maker"
 		]
 	},
 

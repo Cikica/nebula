@@ -20,9 +20,10 @@
 
 		make : function ( require, nebula ) {
 			
-			var self = this
+			var self
+			self = this
 		
-			if ( require.package && require.package.length > 0 ) { 
+			if ( require.package && require.package.length > 0 ) {
 				this.loop({
 					array    : require.package,
 					into     : [],
@@ -41,6 +42,7 @@
 								returned : [].concat( configuration.main, configuration.module )
 							})
 						})
+
 						loop.start_at += 1
 						return loop
 					}
@@ -48,14 +50,14 @@
 			}
 		},
 
-		load : function ( nebula ) {
-			
-			var module_paths, self
+		require_package_modules : function ( load_map ) {
 
+			var module_paths, self
 			self         = this
 			module_paths = []
-			for ( module in nebula.map ) { 
-				module_paths = module_paths.concat( nebula.map[module] )
+
+			for ( module in load_map ) { 
+				module_paths = module_paths.concat( load_map[module] )
 			}
 
 			requirejs( module_paths, function () {
@@ -66,7 +68,7 @@
 					path   : module_paths,
 					object : arguments
 				})
-				module_by_name = self.sort_module_path_map_to_module_by_name_map(module_by_path)
+				module_by_name = self.sort_module_path_map_to_module_by_name_map( module_by_path )
 				for ( var path in module_by_path ) {
 
 					var library
@@ -75,10 +77,30 @@
 						location    : path,
 						map_by_name : module_by_name,
 					})
+
 					console.log( path )
 					console.log( library )
 				}
 			})
+		},
+
+		get_modules_which_are_allowed_to_be_accessed_by_from_library : function ( get ) { 
+			var module, allowed_library
+			allowed_library = {}
+			for ( module in get.library ) {
+				if ( get.library.hasOwnProperty( module ) ) { 
+					// console.log(module)
+					// var this_module_has_premission_to_be_used
+					// this_module_has_premission_to_be_used = this.is_path_allowed_to_access_module({
+					// 	path   : get.path,
+					// 	module : {
+					// 		location   : "js/path/stuff",
+					// 		premission : "."
+					// 	}
+					// })
+				}
+			}
+			return allowed_library
 		},
 
 		is_path_allowed_to_access_module : function ( allow ) {
