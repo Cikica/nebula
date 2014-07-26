@@ -1,12 +1,10 @@
 define({
 
 	define : {
-		// require any library module
-		// require : ["morphism"]
+		require : []
 	},
 
 	make : function () {
-		console.log(window)
 		console.log("entrude young messenger")
 	}
 	
