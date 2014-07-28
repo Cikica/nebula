@@ -1,6 +1,6 @@
 (function ( window, module ) {
 
-	if ( window.define && window.define.amd ) { 
+	if ( window.define && window.define.amd ) {
 		define(module)
 	} else { 
 
