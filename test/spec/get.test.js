@@ -63,6 +63,16 @@ describe("get the closest library version for module based on its location", fun
 			object : module_by_name_map.morph["js/node_maker/morph"]
 		})	
 	})
+
+	it("can find the closest library version for a module when its at the root", function() {
+		expect(module.get_the_closest_library_version_for_module_based_on_its_location({
+			library      : module_by_name_map.morph,
+			location     : "js/node_maker/some",
+			name         : "morph"
+		})).toEqual({
+			
+		})
+	})
 	// supposed to test the error buts its being a punk
 	// it("throws a fit if the module could not be found in the lexical scope of the file", function() {
 	// 	expect(module.get_the_closest_library_version_for_module_based_on_its_location({

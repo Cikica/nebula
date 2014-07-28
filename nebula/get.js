@@ -208,6 +208,7 @@
 		},
 
 		get_module_from_library_if_it_exists : function ( module ) {
+			
 			if ( module.library.hasOwnProperty( module.name ) ) { 
 				return this.get_the_closest_library_version_for_module_based_on_its_location({
 					library           : module.library[ module.name ],
@@ -220,7 +221,7 @@
 		},
 
 		get_the_closest_library_version_for_module_based_on_its_location : function ( module ) {
-			
+			console.log( module )
 			if ( module.current_location === null ) { 
 				throw new Error("The module \""+ module.name +"\" could not be found in the scope of the file \""+ module.location +"\"" )
 			}
@@ -242,6 +243,10 @@
 					current_location : this.get_path_directory( module.current_location )
 				})
 			}
+		},
+
+		is_current_location_in_the_root : function () { 
+			
 		},
 
 		get_path_directory : function ( path ) {
@@ -310,9 +315,11 @@
 		get_an_object_from_combining_two_arrays : function ( object ) {
 
 			var key, value
+
 			object.set = object.set || {}
 			key        = this.remove_last_member_of_array_and_return_leftover( object.key )
 			value      = this.remove_last_member_of_array_and_return_leftover( object.value )
+
 			if ( object.value[object.value.length-1].constructor === Array ) {
 				object.set[object.key.slice(object.key.length-1)] = object.value[object.value.length-1].slice(0)
 			} else { 

@@ -2,5 +2,7 @@ define({
 	// style: "",
 	name   : "main",
 	main   : "main",
-	module : [],
+	module : [
+		"library/test"
+	],
 })

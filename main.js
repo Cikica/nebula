@@ -1,7 +1,9 @@
 define({
 
 	define : {
-		require : []
+		require : [
+			"test"
+		]
 	},
 
 	make : function () {
