@@ -220,10 +220,125 @@
 			}
 		},
 
+		remove_slash_from_the_end_of_path_if_it_has_one : function ( path ) { 
+			if ( path[path.length-1] === "/" ) { 
+				return path.slice(0, path.length-1)
+			} else { 
+				return path
+			}
+		},
+
+		add_slash_at_the_end_of_path_if_it_has_none : function ( path ) {
+			if ( path[path.length-1] !== "/" ) { 
+				return path + "/"
+			} else { 
+				return path
+			}	
+		},
+
+		get_the_directory_name_that_comes_after_the_root_path_if_it_exists : function ( get ) { 
+			
+			if ( get.directory_path.indexOf( get.root_path ) === 0 ) {
+				var split_directory_path, root_path
+				root_path            = (
+					get.root_path ?
+						this.add_slash_at_the_end_of_path_if_it_has_none( get.root_path ) :
+						""
+				)
+				split_directory_path = get.directory_path.replace( root_path, "" ).split("/")
+
+				return ( split_directory_path.length > 1 ? split_directory_path[0] : false )
+
+			} else { 
+				return false
+			}
+		},
+
+		get_folder_names_in_the_path_based_on_map_by_name : function ( folder ) {
+
+			folder.count = folder.count || 0
+			folder.names = folder.names || []
+
+			if ( folder.count >= folder.name_list.length ) { 
+				return folder.names
+			} else {
+				var local_folder_name
+				local_folder_name = this.get_the_directory_name_that_comes_after_the_root_path_if_it_exists({
+					directory_path : folder.name_list[folder.count],
+					root_path      : folder.path
+				})
+				return this.get_folder_names_in_the_path_based_on_map_by_name({
+					name_list : folder.name_list,
+					count     : folder.count + 1,
+					path      : folder.path,
+					names     : ( 
+						local_folder_name !== false ? 
+							folder.names.concat(local_folder_name) : 
+							folder.names
+					),
+				})
+			}
+		},
+
+		get_module_that_is_in_a_folder_of_the_same_scope : function ( module ) { 
+			
+			var library_paths, local_directory_names, potential_paths, module_directory
+
+			library_paths         = this.get_object_keys( module.library )
+			module_directory      = ( module.location ? this.get_path_directory( module.location ) + "/" : "" )
+			local_directory_names = this.get_folder_names_in_the_path_based_on_map_by_name({
+				path      : module_directory,
+				name_list : library_paths
+			})
+			potential_paths       = this.loop({
+				array    : local_directory_names,
+				start_at : 0,
+				into     : [],
+				if_done  : function ( loop ) {
+					return loop.into
+				},
+				else_do  : function ( loop ) {
+					return {
+						array    : loop.array,
+						into     : loop.into.concat( module_directory + loop.array[loop.start_at] + "/" + module.name ),
+						start_at : loop.start_at + 1,
+						if_done  : loop.if_done,
+						else_do  : loop.else_do,
+					}
+				}
+			})
+			
+			return this.loop({
+				array    : potential_paths,
+				start_at : 0,
+				into     : "",
+				if_done  : function ( loop ) {
+					return loop.into
+				},
+				else_do  : function ( loop ) {
+					
+					if ( module.library.hasOwnProperty( loop.array[loop.start_at] ) ) { 
+						loop.into = {
+							path   : loop.array[loop.start_at],
+							object : module.library[loop.array[loop.start_at]]
+						}
+					}
+
+					return {
+						array    : loop.array,
+						into     : loop.into,
+						start_at : ( loop.into ? loop.array.length : loop.start_at + 1 ),
+						if_done  : loop.if_done,
+						else_do  : loop.else_do,
+					}	
+				}
+			})
+		},
+
 		get_the_closest_library_version_for_module_based_on_its_location : function ( module ) {
-			console.log( module )
+			
 			if ( module.current_location === null ) { 
-				throw new Error("The module \""+ module.name +"\" could not be found in the scope of the file \""+ module.location +"\"" )
+				throw new Error("The module \""+ module.name +"\" could not be found in the scope of the file \""+ module.location +"\"")
 			}
 
 			var module_path
@@ -243,10 +358,6 @@
 					current_location : this.get_path_directory( module.current_location )
 				})
 			}
-		},
-
-		is_current_location_in_the_root : function () { 
-			
 		},
 
 		get_path_directory : function ( path ) {
@@ -335,6 +446,17 @@
 					set   : object.set
 				})
 			}
+		},
+
+		get_object_keys : function ( object ) {
+			var keys, property
+			keys = []
+			for ( property in object ) { 
+				if ( object.hasOwnProperty( property ) ) { 
+					keys = keys.concat( property )
+				}
+			}
+			return keys
 		},
 
 		loop : function (loop) {

@@ -11,12 +11,38 @@ module_by_name_map = {
 	"morph" : {
 		"js/morph"                  : "module:js/morph",
 		"js/node_maker/morph"       : "module:js/node_maker/morph",
+		"js/stuff/morph"            : "module:js/stuff/morph",
 		"js/node_maker/other/morph" : "module:js/node_maker/other/morph",
 	},
 	"node_maker" : {
 		"js/node_maker"             : "module:js/node_maker",
-	}
+	},
+	"event_master" : { 
+		"js/stuff/event_master" : "module:js/stuff/event_master"
+	},
+	"nubnub" : { 
+		"js/stuff/nub/nub/nubnub" : "module:js/stuff/nub/nub/nubnub",
+		"js/ahem/nubnub"          : "module:js/ahem/nubnub",
+		"js/ss/nubnub"            : "module:js/ss/nubnub",
+		"js/nubnub"               : "module:js/nubnub",
+		"js/nub/mub/nubnub"       : "module:js/nub/mub/nubnub",
+		"js/nub/scrub/nubnub"     : "module:js/nub/scrub/nubnub"
+	},
 }
+
+describe("get objects keys", function() {
+	it("gets all the keys", function() {
+		expect(module.get_object_keys({
+			"js/s"       : 1,
+			"js/stuff"   : 2,
+			"some/stuff" : 3
+		})).toEqual([
+			"js/s",
+			"js/stuff",
+			"some/stuff",
+		])
+	})
+})
 
 describe("get path directory ", function() {
 
@@ -26,6 +52,135 @@ describe("get path directory ", function() {
 
 	it("returns null if the path has no directory specified", function() {
 		expect( module.get_path_directory( "js.js" ) ).toBe( null )	
+	})
+})
+
+describe("remove slash from the end of path if it has one", function() {
+	
+	it("removes a slash from path", function() {
+		expect(
+			module.remove_slash_from_the_end_of_path_if_it_has_one("js/")
+		).toEqual("js")
+	})
+
+	it("returns path as is because it has no slash at the end", function() {
+		expect(
+			module.remove_slash_from_the_end_of_path_if_it_has_one("js")
+		).toEqual("js")	
+	})
+})
+
+describe("get the directory name that comes after the root path if it exists", function() {
+
+	it("finds the directory name of a valid path and root", function() {
+		expect(module.get_the_directory_name_that_comes_after_the_root_path_if_it_exists({
+			directory_path : "js/stuff/some/name",
+			root_path      : "js/stuff"
+		})).toEqual("some")
+	})
+
+	it("returns false if there is not directory name that comes after the path", function() {
+		expect(module.get_the_directory_name_that_comes_after_the_root_path_if_it_exists({
+			directory_path : "js/stuff/some",
+			root_path      : "js/stuff"
+		})).toBe(false)
+	})
+
+	it("returns false if the root path is not within the directory path", function() {
+		expect(module.get_the_directory_name_that_comes_after_the_root_path_if_it_exists({
+			directory_path : "js/stuff/some",
+			root_path      : "stuff"
+		})).toEqual(false)
+	})
+
+	it("dosent break if you offer it a root path with a slash (/) at the end", function() {
+		expect(module.get_the_directory_name_that_comes_after_the_root_path_if_it_exists({
+			directory_path : "js/stuff/some/name",
+			root_path      : "js/stuff/"
+		})).toEqual("some")
+	})
+
+	it("dosent break if you give it an empty root path", function() {
+		expect(module.get_the_directory_name_that_comes_after_the_root_path_if_it_exists({
+			directory_path : "js/stuff/some/name",
+			root_path      : ""
+		})).toEqual("js")		
+	})
+})
+
+describe("get folder names in the path based on the map by name", function() {
+
+	it("does what it says dammit", function() {
+		expect(module.get_folder_names_in_the_path_based_on_map_by_name({
+			name_list  : [
+				"js/stuff",
+				"js/some/name",
+				"js/name/some"
+			],
+			path       : "js"
+		})).toEqual([
+			"some",
+			"name"
+		])
+	})
+
+	it("gets the foler names when the given root paht is empty meaning its absolute root", function() {
+		expect(module.get_folder_names_in_the_path_based_on_map_by_name({
+			name_list  : [
+				"stuff",
+				"some/name",
+				"name/some"
+			],
+			path       : ""
+		})).toEqual([
+			"some",
+			"name"
+		])
+	})
+})
+
+describe("get module that is in the a folder of the same scope ", function() {
+	
+	it("finds a module in the same scope", function() {
+		expect(module.get_module_that_is_in_a_folder_of_the_same_scope({
+			library  : module_by_name_map.event_master,
+			location : "js/some_name",
+			name     : "event_master"
+		})).toEqual({
+			path   : "js/stuff/event_master",
+			object : module_by_name_map.event_master["js/stuff/event_master"]
+		})
+	})
+
+	it("does a more extensive search", function() {
+		expect(module.get_module_that_is_in_a_folder_of_the_same_scope({
+			library  : module_by_name_map.nubnub,
+			location : "js/stuff",
+			name     : "nubnub"
+		})).toEqual({
+			path   : "js/ahem/nubnub",
+			object : module_by_name_map.nubnub["js/ahem/nubnub"]
+		})
+
+		expect(module.get_module_that_is_in_a_folder_of_the_same_scope({
+			library  : module_by_name_map.nubnub,
+			location : "js/nub/mub",
+			name     : "nubnub"
+		})).toEqual({
+			path   : "js/nub/mub/nubnub",
+			object : module_by_name_map.nubnub["js/nub/mub/nubnub"]
+		})
+	})
+
+	it("handles null directory searches", function() {
+		expect(module.get_module_that_is_in_a_folder_of_the_same_scope({
+			library  : module_by_name_map.nubnub,
+			location : "",
+			name     : "nubnub"
+		})).toEqual({
+			path   : "js/nubnub",
+			object : module_by_name_map.nubnub["js/nubnub"]
+		})		
 	})
 })
 
@@ -62,16 +217,6 @@ describe("get the closest library version for module based on its location", fun
 			path   : "js/node_maker/morph",
 			object : module_by_name_map.morph["js/node_maker/morph"]
 		})	
-	})
-
-	it("can find the closest library version for a module when its at the root", function() {
-		expect(module.get_the_closest_library_version_for_module_based_on_its_location({
-			library      : module_by_name_map.morph,
-			location     : "js/node_maker/some",
-			name         : "morph"
-		})).toEqual({
-			
-		})
 	})
 	// supposed to test the error buts its being a punk
 	// it("throws a fit if the module could not be found in the lexical scope of the file", function() {
