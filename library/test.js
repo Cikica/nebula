@@ -1,3 +1,6 @@
 define({
-	stuff : "stuff"
+	define : { 
+		allow : "*"
+	},
+	make : function () {},
 })

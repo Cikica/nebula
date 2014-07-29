@@ -81,6 +81,7 @@
 						location    : path,
 						map_by_name : module_by_name,
 					})
+
 					premited_library = self.get_modules_which_are_allowed_from_library_based_on_location({
 						path    : path,
 						library : pure_library
@@ -90,7 +91,7 @@
 				}
 				// can put a filter in here that filters all the global variables that decide 
 				// what does into the the app
-				module_by_path["main"].make.call({})
+				module_by_path["main"].make()
 			})
 		},
 
@@ -174,7 +175,7 @@
 		},
 
 		get_required_modules_from_map_by_name : function ( sort ) {
-
+			
 			var module, module_name, modules_left_to_require
 
 			module_name             = sort.require.slice(sort.require.length-1)
@@ -340,9 +341,10 @@
 			if ( module.current_location === null ) { 
 				throw new Error("The module \""+ module.name +"\" could not be found in the scope of the file \""+ module.location +"\"")
 			}
-
+			// slight clean up here necessary
 			var module_path, is_module_in_local_scope
 			module.current_location  = module.current_location || module.location
+			module.current_location  = ( this.get_path_directory( module.current_location ) ? module.current_location : "" )
 			module_path              = module.current_location +"/"+ module.name
 			is_module_in_local_scope = this.get_module_that_is_in_a_folder_of_the_same_scope({
 				library  : module.library,
