@@ -307,7 +307,7 @@
 					}
 				}
 			})
-			
+
 			return this.loop({
 				array    : potential_paths,
 				start_at : 0,
@@ -341,9 +341,18 @@
 				throw new Error("The module \""+ module.name +"\" could not be found in the scope of the file \""+ module.location +"\"")
 			}
 
-			var module_path
-			module.current_location = module.current_location || module.location
-			module_path             = module.current_location +"/"+ module.name
+			var module_path, is_module_in_local_scope
+			module.current_location  = module.current_location || module.location
+			module_path              = module.current_location +"/"+ module.name
+			is_module_in_local_scope = this.get_module_that_is_in_a_folder_of_the_same_scope({
+				library  : module.library,
+				location : module.current_location,
+				name     : module.name
+			})
+
+			if ( is_module_in_local_scope ) { 
+				return is_module_in_local_scope
+			}
 
 			if ( module.library.hasOwnProperty(module_path) ) {
 				return {

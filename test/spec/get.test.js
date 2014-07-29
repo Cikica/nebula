@@ -214,9 +214,20 @@ describe("get the closest library version for module based on its location", fun
 			location     : "js/node_maker/some",
 			name         : "morph"
 		})).toEqual({ 
-			path   : "js/node_maker/morph",
-			object : module_by_name_map.morph["js/node_maker/morph"]
-		})	
+			path   : "js/node_maker/other/morph",
+			object : module_by_name_map.morph["js/node_maker/other/morph"]
+		})
+	})
+
+	it("finds a module that is sideways in scope not just lexical", function() {
+		expect( module.get_the_closest_library_version_for_module_based_on_its_location({
+			library      : module_by_name_map.nubnub,
+			location     : "js/node_maker",
+			name         : "nubnub"
+		})).toEqual({ 
+			path   : "js/ahem/nubnub",
+			object : module_by_name_map.nubnub["js/ahem/nubnub"]
+		})
 	})
 	// supposed to test the error buts its being a punk
 	// it("throws a fit if the module could not be found in the lexical scope of the file", function() {
