@@ -22,7 +22,7 @@
 			
 			var self
 			self = this
-		
+
 			if ( package.require.package && package.require.package.length > 0 ) {
 				this.loop({
 					array    : package.require.package,
@@ -30,17 +30,46 @@
 					start_at : 0,
 					if_done  : function () {},
 					else_do  : function ( loop ) {
-						
-						nebula.module_is_loading({
+
+						var get_package_path
+
+						package.sort.module_is_loading({
 							called : loop.array[loop.start_at] 
 						})
+						get_package_path = function () { 
+							return loop.array[loop.start_at-1]
+						}
 
 						requirejs([ loop.array[loop.start_at] +"/configuration" ], function ( configuration ) {
+							
+							var package_path
+							package_path = get_package_path()
 
-							self.make( configuration, nebula )
+							self.make({
+								require        : configuration,
+								sort           : package.sort,
+								root_directory : package.root_directory
+							})
+
 							package.sort.module_has_loaded({
-								called   : configuration.name,
-								returned : [].concat( configuration.main, configuration.module )
+								called   : package_path,
+								returned : self.loop({
+									array    : [].concat( configuration.main, configuration.module ),
+									start_at : 0,
+									into     : [],
+									if_done  : function ( loop ) { 
+										return loop.into
+									},
+									else_do : function ( loop ) { 
+										return { 
+											array    : loop.array,
+											start_at : loop.start_at + 1,
+											into     : loop.into.concat( package_path + "/" + loop.array[loop.start_at] ),
+											if_done  : loop.if_done,
+											else_do  : loop.else_do,
+										}
+									}
+								})
 							})
 
 						})
@@ -55,6 +84,7 @@
 		require_package_modules : function ( require ) {
 
 			var module_paths, self
+
 			self         = this
 			module_paths = []
 
@@ -291,6 +321,7 @@
 				path      : module_directory,
 				name_list : library_paths
 			})
+
 			potential_paths       = this.loop({
 				array    : local_directory_names,
 				start_at : 0,
@@ -318,10 +349,21 @@
 				},
 				else_do  : function ( loop ) {
 					
-					if ( module.library.hasOwnProperty( loop.array[loop.start_at] ) ) { 
+					var potential_module_path, potential_package_path
+					potential_module_path  = loop.array[loop.start_at]
+					potential_package_path = loop.array[loop.start_at] +"/"+ module.name
+
+					if ( module.library.hasOwnProperty( potential_module_path ) ) { 
 						loop.into = {
-							path   : loop.array[loop.start_at],
-							object : module.library[loop.array[loop.start_at]]
+							path   : potential_module_path,
+							object : module.library[potential_module_path]
+						}
+					}
+
+					if ( module.library.hasOwnProperty( potential_package_path ) ) { 
+						loop.into = {
+							path   : potential_package_path,
+							object : module.library[potential_package_path]
 						}
 					}
 
@@ -341,8 +383,11 @@
 			if ( module.current_location === null ) { 
 				throw new Error("The module \""+ module.name +"\" could not be found in the scope of the file \""+ module.location +"\"")
 			}
+			
 			// slight clean up here necessary
+						
 			var module_path, is_module_in_local_scope
+
 			module.current_location  = module.current_location || module.location
 			module.current_location  = ( this.get_path_directory( module.current_location ) ? module.current_location : "" )
 			module_path              = module.current_location +"/"+ module.name

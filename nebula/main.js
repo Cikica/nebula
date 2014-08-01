@@ -17,6 +17,7 @@
 		make : function ( module ) {
 
 			var sorter
+
 			sorter = module.nebula.nebula.make()
 			
 			sorter.module_is_loading({

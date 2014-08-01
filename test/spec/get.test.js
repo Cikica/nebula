@@ -17,16 +17,17 @@ module_by_name_map = {
 	"node_maker" : {
 		"js/node_maker"             : "module:js/node_maker",
 	},
-	"event_master" : { 
+	"event_master" : {
 		"js/stuff/event_master" : "module:js/stuff/event_master"
 	},
-	"nubnub" : { 
+	"nubnub" : {
 		"js/stuff/nub/nub/nubnub" : "module:js/stuff/nub/nub/nubnub",
 		"js/ahem/nubnub"          : "module:js/ahem/nubnub",
 		"js/ss/nubnub"            : "module:js/ss/nubnub",
 		"js/nubnub"               : "module:js/nubnub",
 		"js/nub/mub/nubnub"       : "module:js/nub/mub/nubnub",
-		"js/nub/scrub/nubnub"     : "module:js/nub/scrub/nubnub"
+		"js/nub/scrub/nubnub"     : "module:js/nub/scrub/nubnub",
+		"js/scrub/scrub"          : "module:js/scrub/scrub"
 	},
 }
 
@@ -180,7 +181,18 @@ describe("get module that is in the a folder of the same scope ", function() {
 		})).toEqual({
 			path   : "js/nubnub",
 			object : module_by_name_map.nubnub["js/nubnub"]
-		})		
+		})
+	})
+
+	it("finds local scope packages", function() {
+		expect(module.get_module_that_is_in_a_folder_of_the_same_scope({
+			library  : module_by_name_map.nubnub,
+			location : "",
+			name     : "scrub"
+		})).toEqual({
+			path   : "js/scrub/scrub",
+			object : module_by_name_map.nubnub["js/scrub/scrub"]
+		})
 	})
 })
 
