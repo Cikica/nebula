@@ -91,7 +91,7 @@
 		},
 
 		require_package_modules : function ( require ) {
-			console.log( require )
+			
 			var module_paths, self
 
 			self         = this
@@ -368,7 +368,7 @@
 							object : module.library[potential_module_path]
 						}
 					}
-					console.log( potential_package_path )
+					
 					if ( module.library.hasOwnProperty( potential_package_path ) ) { 
 						loop.into = {
 							path   : potential_package_path,
@@ -405,7 +405,7 @@
 				location : module.current_location,
 				name     : module.name
 			})
-			console.log( module_path )
+			
 
 			if ( is_module_in_local_scope ) { 
 				return is_module_in_local_scope
