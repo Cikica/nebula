@@ -22,8 +22,11 @@
 			
 			var self
 			self = this
-
+			
 			if ( package.require.package && package.require.package.length > 0 ) {
+
+				package.previous_path = package.previous_path || ""
+
 				this.loop({
 					array    : package.require.package,
 					into     : [],
@@ -31,7 +34,7 @@
 					if_done  : function () {},
 					else_do  : function ( loop ) {
 
-						var get_package_path
+						var get_package_path, before_load_previous_path
 
 						package.sort.module_is_loading({
 							called : loop.array[loop.start_at] 
@@ -40,15 +43,21 @@
 							return loop.array[loop.start_at-1]
 						}
 
-						requirejs([ loop.array[loop.start_at] +"/configuration" ], function ( configuration ) {
+						
+						requirejs([ package.previous_path + loop.array[loop.start_at] +"/configuration" ], function ( configuration ) {
 							
-							var package_path
-							package_path = get_package_path()
-
+							var package_path, previous_path
+							package_path  = get_package_path()
+							previous_path = ( 
+								package.previous_path ?
+									package.previous_path + self.add_slash_at_the_end_of_path_if_it_has_none( package_path ) :
+									self.add_slash_at_the_end_of_path_if_it_has_none( package_path ) 
+							)
 							self.make({
 								require        : configuration,
 								sort           : package.sort,
-								root_directory : package.root_directory
+								root_directory : package.root_directory,
+								previous_path  : previous_path
 							})
 
 							package.sort.module_has_loaded({
@@ -64,7 +73,7 @@
 										return { 
 											array    : loop.array,
 											start_at : loop.start_at + 1,
-											into     : loop.into.concat( package_path + "/" + loop.array[loop.start_at] ),
+											into     : loop.into.concat( previous_path + loop.array[loop.start_at] ),
 											if_done  : loop.if_done,
 											else_do  : loop.else_do,
 										}
@@ -82,7 +91,7 @@
 		},
 
 		require_package_modules : function ( require ) {
-
+			console.log( require )
 			var module_paths, self
 
 			self         = this
@@ -359,7 +368,7 @@
 							object : module.library[potential_module_path]
 						}
 					}
-
+					console.log( potential_package_path )
 					if ( module.library.hasOwnProperty( potential_package_path ) ) { 
 						loop.into = {
 							path   : potential_package_path,
@@ -396,6 +405,7 @@
 				location : module.current_location,
 				name     : module.name
 			})
+			console.log( module_path )
 
 			if ( is_module_in_local_scope ) { 
 				return is_module_in_local_scope
