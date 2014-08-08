@@ -1,10 +1,7 @@
 define({
 	
 	define : { 
-		allow   : "*",
-		require : [
-			"test_package"
-		]
+		allow : "*"
 	},
 
 	make_test : function (  ) {

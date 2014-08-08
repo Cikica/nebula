@@ -8,7 +8,7 @@ define({
 	},
 
 	make : function () {
-		console.log( this.library )
+		// console.log( this.library )
 		console.log("entrude young messenger")
 	}
 	
