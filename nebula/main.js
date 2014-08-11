@@ -19,11 +19,6 @@
 			var sorter
 
 			sorter = module.nebula.nebula.make()
-			
-			sorter.module_is_loading({
-				called : module.configuration.name
-			})
-
 			sorter.call_this_method_upon_load_completion( function ( load_map ) {
 				module.nebula.get.require_package_modules({
 					main_module_name : module.configuration.name,
@@ -35,12 +30,11 @@
 			module.nebula.get.make({
 				require        : module.configuration, 
 				sort           : sorter,
-				root_directory : module.root
-			})
-
-			sorter.module_has_loaded({
-				called   : module.configuration.name,
-				returned : [].concat( module.configuration.main, module.configuration.module )
+				root_directory : module.root,
+				module         : { 
+					to_load : [].concat( module.configuration.name ),
+					loaded  : [].concat( module.configuration.main, module.configuration.module )
+				}
 			})
 		}
 	}
