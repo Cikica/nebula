@@ -22,10 +22,28 @@
 			
 			var self
 			self = this
-			console.log( package.require )			
-			if ( package.require.package && package.require.package.length > 0 ) {
 
+			if ( package.require.package && package.require.package.length > 0 ) {
+				
 				package.previous_path = package.previous_path || ""
+
+				// make a way for nebula to accept an array of packages to load rather 
+				// than having to do this here loop thingy
+				this.loop({
+					array    : package.require.package,
+					into     : [],
+					start_at : 0,
+					if_done  : function () {},
+					else_do  : function ( loop ) {
+						
+						package.sort.loading_module({
+							path : loop.array[loop.start_at]
+						})			
+
+						loop.start_at += 1
+						return loop
+					}
+				})
 
 				this.loop({
 					array    : package.require.package,
@@ -34,22 +52,12 @@
 					if_done  : function () {},
 					else_do  : function ( loop ) {
 
-						var get_package_path, previous_path
+						var get_package_path
 
-						previous_path    = self.get_previous_path({
-							previous : package.previous_path,
-							package  : loop.array[loop.start_at]
-						})
 						get_package_path = function () { 
 							return loop.array[loop.start_at-1]
-						}
-						package.sort.module_is_loading({
-							called : previous_path + package.sort.get_module_name_from_path(
-								loop.array[loop.start_at]
-							)
-						})
+						}	
 
-						
 						requirejs([ package.previous_path + loop.array[loop.start_at] +"/configuration" ], function ( configuration ) {
 
 							var package_path, previous_path
@@ -58,32 +66,33 @@
 								previous : package.previous_path,
 								package  : package_path
 							})
+							
 							self.make({
 								require        : configuration,
 								sort           : package.sort,
 								root_directory : package.root_directory,
 								previous_path  : previous_path
 							})
-
-							package.sort.module_has_loaded({
-								called   : package_path,
-								returned : self.loop({
-									array    : [].concat( configuration.main, configuration.module ),
-									start_at : 0,
-									into     : [],
-									if_done  : function ( loop ) { 
-										return loop.into
-									},
-									else_do : function ( loop ) {
-										return { 
-											array    : loop.array,
-											start_at : loop.start_at + 1,
-											into     : loop.into.concat( previous_path + loop.array[loop.start_at] ),
-											if_done  : loop.if_done,
-											else_do  : loop.else_do,
-										}
-									}
-								})
+							// console.log( package_path )
+							package.sort.loaded_module({
+								path     : package_path,
+							// 	returned : self.loop({
+							// 		array    : [].concat( configuration.main, configuration.module ),
+							// 		start_at : 0,
+							// 		into     : [],
+							// 		if_done  : function ( loop ) { 
+							// 			return loop.into
+							// 		},
+							// 		else_do : function ( loop ) {
+							// 			return { 
+							// 				array    : loop.array,
+							// 				start_at : loop.start_at + 1,
+							// 				into     : loop.into.concat( previous_path + loop.array[loop.start_at] ),
+							// 				if_done  : loop.if_done,
+							// 				else_do  : loop.else_do,
+							// 			}
+							// 		}
+								// })
 							})
 
 						})
