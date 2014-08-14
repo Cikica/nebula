@@ -90,9 +90,6 @@
 										return loop.into
 									},
 									else_do : function ( loop ) {
-										window.plusplus = window.plusplus || 0
-										window.plusplus++
-										console.log( window.plusplus + " "+ previous_path + loop.array[loop.start_at] )
 										return { 
 											array    : loop.array,
 											start_at : loop.start_at + 1,
@@ -126,7 +123,7 @@
 
 			self         = this
 			module_paths = require.load_map.slice(0)
-			console.log( require )
+
 			requirejs( module_paths, function () {
 				
 				var module_by_path, module_by_name
@@ -159,7 +156,7 @@
 				// console.log( require )
 				// console.log( module_by_path )
 				// console.log( module_by_path[require.main_module_name] )
-				module_by_path[require.main_module_name].make()
+				require.set_global( module_by_path[require.main_module_name] )
 			})
 		},
 
