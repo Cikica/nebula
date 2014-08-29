@@ -325,8 +325,23 @@
 			return this.index_loop({
 				subject : array.key,
 				into    : {},
+				if_done : function ( loop ) { 
+					return ( array.if_done ? array.if_done.call( {}, loop ) : loop.into )
+				},
 				else_do : function ( loop ) {
-					loop.into[loop.indexed] = array.value[loop.index]
+					var value
+					if ( array.else_do ) { 
+						value = array.else_do.call( {}, {
+							index : loop.index,
+							key   : loop.indexed,
+							value : array.value[loop.index],
+							set   : loop.into
+						})
+					} else { 
+						value = array.value[loop.index]
+					}
+					loop.into[loop.indexed] = value
+
 					return loop.into
 				}
 			})

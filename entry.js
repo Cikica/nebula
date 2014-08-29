@@ -70,37 +70,6 @@
 	window,
 	{
 
-		sort_module_paths_and_objects_into_path_map : function ( map ) {
-			map.index = map.index || 0
-			map.into  = map.into  || {}
-			if ( map.index >= map.paths.length ) {
-				return map.into
-			} else {
-				map.into[map.paths[map.index]] = map.objects[map.index]
-				return this.sort_module_paths_and_objects_into_path_map({
-					index   : map.index + 1,
-					into    : map.into,
-					paths   : map.paths.slice(0),
-					objects : map.objects
-				})
-			}
-		},
-
-		prefix_every_string_in_array : function ( prefix ) { 
-			prefix.at   = prefix.at   || 0
-			prefix.into = prefix.into || []
-			if ( prefix.at >= prefix.array.length ) { 
-				return prefix.into
-			} else { 
-				return this.prefix_every_string_in_array({
-					array  : prefix.array.slice(0),
-					at     : prefix.at + 1,
-					into   : prefix.into.concat( prefix.string + prefix.array[prefix.at] ),
-					string : prefix.string
-				})
-			}
-		},
-
 		get_the_root_directory_based_on_last_loaded_script : function ( last_loaded_script ) { 
 
 			var directory_from_attribute

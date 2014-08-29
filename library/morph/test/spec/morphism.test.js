@@ -13,6 +13,20 @@
 				"d" : 2
 			})
 		})
+		it("mergers with a method", function() {
+			expect(
+				module.get_object_from_array({
+					key     : ["s", "d"],
+					value   : [1,2],
+					else_do : function ( loop ) {
+						return loop.value + "some"
+					}
+				})
+			).toEqual({
+				"s" : "1some",
+				"d" : "2some"
+			})
+		})
 	})
 
 	describe("homomorph", function () {
