@@ -321,6 +321,17 @@
 
 		},
 
+		get_object_from_array : function ( array ) {
+			return this.index_loop({
+				subject : array.key,
+				into    : {},
+				else_do : function ( loop ) {
+					loop.into[loop.indexed] = array.value[loop.index]
+					return loop.into
+				}
+			})
+		},
+
 		while_greater_than_zero : function ( loop ) { 
 			return this.base_loop({
 				count        : loop.count,

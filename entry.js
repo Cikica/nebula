@@ -42,22 +42,17 @@
 							return loop.into.concat( "nebula/"+ loop.indexed )
 						}
 					})
-					console.log( tool_module_paths )
-					tool_module_paths = module.prefix_every_string_in_array({
-						string : "nebula/",
-						array  : [].concat( tool_configuration.main, tool_configuration.module )
-					})
 
 					requirejs( tool_module_paths , function () {
 
 						var tool_path_map, loaded_modules
 
 						loaded_modules = Array.prototype.slice.call( arguments )
-						tool_path_map  = module.sort_module_paths_and_objects_into_path_map({
-							paths   : [].concat( tool_configuration.module, "entry" ),
-							objects : loaded_modules.slice(1).concat( module )
+						tool_path_map  = morph.get_object_from_array({
+							key   : [].concat( tool_configuration.module, "entry", "morph" ),
+							value : loaded_modules.slice(1).concat( module, morph )
 						})
-						console.log( tool_path_map )
+						
 						arguments[0].make({
 							nebula        : tool_path_map,
 							configuration : module_configuration,

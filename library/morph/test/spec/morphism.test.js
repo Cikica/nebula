@@ -1,6 +1,20 @@
 
 	var module = window.morph
 
+	describe("get object from arrays", function ( ) {
+		it("merges", function() {
+			expect(
+				module.get_object_from_array({
+					key   : ["s", "d"],
+					value : [1,2]
+				})
+			).toEqual({
+				"s" : 1,
+				"d" : 2
+			})
+		})
+	})
+
 	describe("homomorph", function () {
 		
 		var input, expected_array, maped_array
