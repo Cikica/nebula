@@ -2,6 +2,13 @@ define({
 	// style: "",
 	name   : "main",
 	main   : "main",
+	start  : { 
+		base : {
+			file : "",
+			with : "",
+		},
+		test : {}
+	},
 	module : [
 		"library/test"
 	],

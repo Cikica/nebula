@@ -31,10 +31,18 @@
 
 				requirejs([
 					"nebula/configuration",
+					"library/morph/morph",
 					"configuration"
-				], function ( tool_configuration, module_configuration ) {
+				], function ( tool_configuration, morph, module_configuration ) {
 
 					var tool_module_paths
+					tool_module_paths = morph.index_loop({
+						subject : [].concat( tool_configuration.main, tool_configuration.module ),
+						else_do : function ( loop ) { 
+							return loop.into.concat( "nebula/"+ loop.indexed )
+						}
+					})
+					console.log( tool_module_paths )
 					tool_module_paths = module.prefix_every_string_in_array({
 						string : "nebula/",
 						array  : [].concat( tool_configuration.main, tool_configuration.module )
@@ -49,7 +57,7 @@
 							paths   : [].concat( tool_configuration.module, "entry" ),
 							objects : loaded_modules.slice(1).concat( module )
 						})
-
+						console.log( tool_path_map )
 						arguments[0].make({
 							nebula        : tool_path_map,
 							configuration : module_configuration,
@@ -70,7 +78,7 @@
 		sort_module_paths_and_objects_into_path_map : function ( map ) {
 			map.index = map.index || 0
 			map.into  = map.into  || {}
-			if ( map.index >= map.paths.length ) { 
+			if ( map.index >= map.paths.length ) {
 				return map.into
 			} else {
 				map.into[map.paths[map.index]] = map.objects[map.index]
