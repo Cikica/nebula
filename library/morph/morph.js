@@ -413,7 +413,7 @@
 		index_loop_base : function (loop) {
 			
 			if ( loop.subject === undefined ) {
-				throw new this.exceptions.definition("index_loop_base \"subject\" paramter has not been declared")
+				console.error("The loop \"subject\" has not been specified")
 			}
 
 			var length

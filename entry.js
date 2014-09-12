@@ -28,6 +28,7 @@
 				require.config({
 					baseUrl : root_directory
 				})
+				console.log( root_directory )
 
 				requirejs([
 					"nebula/configuration",
@@ -45,16 +46,19 @@
 
 					requirejs( tool_module_paths , function () {
 
-						var tool_path_map, loaded_modules
-
-						loaded_modules = Array.prototype.slice.call( arguments )
-						tool_path_map  = morph.get_object_from_array({
+						var tools = morph.get_object_from_array({
 							key   : [].concat( tool_configuration.module, "entry", "morph" ),
-							value : loaded_modules.slice(1).concat( module, morph )
+							value : Array.prototype.slice.call( arguments ).slice(1).concat( module, morph )
 						})
-						
+
 						arguments[0].make({
-							nebula        : tool_path_map,
+							nebula     : morph.homomorph({
+								object : tools,
+								with   : function ( member ) {
+									member.value.nebula = tools
+									return member.value
+								}
+							}),
 							configuration : module_configuration,
 							root          : root_directory
 						})
