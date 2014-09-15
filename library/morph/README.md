@@ -11,55 +11,87 @@ Signed Mr.Slackaslack
 
 #### Homomorph
 
-**Definition** : 
+**Definition** :
 
 ```javascript
-morph.homomorph({ object : {}, set : "(object|array)", with : function () {} })
+morph.object_loop({ 
+	"subject"  : {},
+	"into?"    : Anything,
+	"if_done?" : function ( loop ) {
+		/*
+			console.log( loop )
+			=> {
+				object : Object,
+				key    : Array,
+				value  : Array,
+				into   : Anything
+			}
+		*/
+		return Anything
+	},
+	"else_do"  : function ( loop ) {
+		/*
+			console.log( loop ) 
+			=> {
+				index : Number,
+				key   : String,
+				value : String || Number || Object || Array,
+				into  : Anything
+			}
+		*/
+
+		return { 
+			key   : Number,
+			value : String || Number || Object || Array,
+			into  : Anything
+		}
+	}
+}) => Anything
 ```
 
-**Examples** : 
-
-Map to object
+**Examples** :
 
 ```javascript
-var who
-who = morph.homomorph({
-	object : {
-		title : "Count",
-		name  : "Dracula"
+var result
+result = morph.object_loop({
+	"subject" : {
+		s : "d",
+		b : "some"
 	},
-	with   : function ( member ) {
-		// first iteration
-		member.value         // => Count
-		member.property_name // => title
-		member.set           // => {}
-		return member.value + "mwhaahaha"
+	"else_do" : function ( loop ) {
+		return {
+			key   : loop.index + "2" + loop.key,
+			value : loop.value + loop.index + "4"
+		}
 	}
 })
-console.log( who ) 
-// => { title : "Countmwhaahaha", name : "Draculamwhaahaha" }
+console.log( result )
+=> {
+	"02s" : "d04",
+	"12b" : "some14",
+}
 ```
 
-Map to array
-
 ```javascript
-var who
-who = morph.homomorph({
-	object : {
-		title : "Count",
-		name  : "Dracula"
+var result
+result = morph.object_loop({
+	"subject" : {
+		s : "d",
+		b : "some"
 	},
-	set    : "array",
-	with   : function ( member ) {
-		// first iteration
-		member.value         // => Count
-		member.property_name // => title
-		member.set           // => []
-		return member.value + "mwhaahaha"
+	"if_done?" : function ( loop ) { 
+		console.log( loop )
+		return [ loop.key[0], loop.value[0], loop.key[1], loop.value[1] ].join(":")
+	},
+	"else_do" : function ( loop ) {
+		return {
+			key   : loop.index + "2" + loop.key,
+			value : loop.value + loop.index + "4"
+		}
 	}
 })
-console.log( who ) 
-// => [ "Countmwhaahaha", "Draculamwhaahaha" ]
+console.log( result )
+=> "02s:d04:12b:some14"
 ```
 
 ### To Do

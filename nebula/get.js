@@ -42,7 +42,7 @@
 						package.sort.loading_module({
 							path : loop.indexed
 						})
-						
+
 						return loop.into
 					}
 				})
@@ -101,20 +101,24 @@
 		},
 
 		require_package_modules : function ( require ) {
-
 			var module_paths, self, module_load_paths
 
 			self              = this
 			module_paths      = require.load_map.slice(0)
 			module_load_paths = this.nebula.morph.index_loop({
 				subject : module_paths,
-				else_do : function ( loop ) { 
-					return loop.into.concat( require.root_directory +"/"+ loop.indexed +".js" )
+				else_do : function ( loop ) {
+
+					return loop.into.concat( self.nebula.sort.get_full_url_from_root_and_path({
+						root : require.root_directory,
+						path : loop.indexed
+					}))
 				}
 			})
+			console.log( self.nebula.sort.nebula )
 
-			requirejs( module_paths, function () {
-				
+			// console.log(module_load_paths)
+			requirejs( module_load_paths, function () {
 				var module_by_path, module_by_name
 
 				module_by_path = self.nebula.sort.sort_module_paths_and_objects_into_module_path_map({

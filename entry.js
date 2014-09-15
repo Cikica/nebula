@@ -25,44 +25,49 @@
 			require_js.src     = root_directory + "/require.js"
 			require_js.onload  = function () {
 
-				require.config({
-					baseUrl : root_directory
-				})
-				console.log( root_directory )
+				// require.config({
+				// 	baseUrl : root_directory
+				// })
 
 				requirejs([
-					"nebula/configuration",
-					"library/morph/morph",
-					"configuration"
+					root_directory + "/nebula/configuration.js",
+					root_directory + "/library/morph/morph.js",
+					root_directory + "/configuration.js"
 				], function ( tool_configuration, morph, module_configuration ) {
 
-					var tool_module_paths
-					tool_module_paths = morph.index_loop({
-						subject : [].concat( tool_configuration.main, tool_configuration.module ),
-						else_do : function ( loop ) { 
-							return loop.into.concat( "nebula/"+ loop.indexed )
-						}
-					})
+					requirejs( 
+						morph.index_loop({
+							subject : [].concat( tool_configuration.main, tool_configuration.module ),
+							else_do : function ( loop ) {
+								return loop.into.concat( root_directory + "/nebula/"+ loop.indexed +".js" )
+							}
+						}), 
+						function () {
 
-					requirejs( tool_module_paths , function () {
-
-						var tools = morph.get_object_from_array({
-							key   : [].concat( tool_configuration.module, "entry", "morph" ),
-							value : Array.prototype.slice.call( arguments ).slice(1).concat( module, morph )
-						})
-
-						arguments[0].make({
-							nebula     : morph.homomorph({
-								object : tools,
-								with   : function ( member ) {
-									member.value.nebula = tools
-									return member.value
+							var nebula_library, tool_name, tool_object
+							tool_name   = [].concat( tool_configuration.module, "entry", "morph" )
+							tool_object = Array.prototype.slice.call( arguments ).slice(1).concat( module, morph )
+							tools       = morph.get_object_from_array({
+								key   : tool_name,
+								value : tool_object
+							})
+							nebula_library = morph.index_loop({
+								subject : Array.prototype.slice.call( arguments ).slice(1).concat( module, morph ),
+								into    : {},
+								else_do : function ( loop ) {
+									loop.indexed.nebula              = loop.into
+									loop.into[tool_name[loop.index]] = loop.indexed
+									return loop.into
 								}
-							}),
-							configuration : module_configuration,
-							root          : root_directory
-						})
-					})
+							})
+
+							arguments[0].make({
+								nebula        : nebula_library,
+								configuration : module_configuration,
+								root          : root_directory
+							})
+						}
+					)
 				})
 			}
 

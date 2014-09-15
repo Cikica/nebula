@@ -15,7 +15,7 @@
 	window,
 	{ 
 		make : function ( module ) {
-			
+			console.log( module )
 			var count_object
 
 			count_object = module.nebula.nebula.make()
