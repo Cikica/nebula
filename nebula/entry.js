@@ -31,7 +31,7 @@
 
 				requirejs([
 					root_directory + "/nebula/configuration.js",
-					root_directory + "/library/morph/morph.js",
+					root_directory + "/nebula/morph/morph.js",
 					root_directory + "/configuration.js"
 				], function ( tool_configuration, morph, module_configuration ) {
 
