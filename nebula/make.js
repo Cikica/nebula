@@ -15,8 +15,6 @@
 	window,
 	{ 
 		make : function ( module ) {
-
-			console.log( module )
 			
 			var count_object
 
@@ -27,11 +25,11 @@
 					main_module_name : module.configuration.name,
 					load_map         : load_map.path,
 					root_directory   : module.root,
-					set_global       : function ( object ) { 
-						
+					set_global       : function ( object ) {
+
 						if ( module.configuration.start ) { 
 							
-							if ( module.configuration.start.initiate ) { 
+							if ( module.configuration.start.initiate ) {
 								object.make()
 							}
 

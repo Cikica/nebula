@@ -42,7 +42,7 @@
 						package.sort.loading_module({
 							path : loop.indexed
 						})
-
+						
 						return loop.into
 					}
 				})
@@ -57,7 +57,9 @@
 							return loop.indexed
 						}	
 
-						requirejs([ package.previous_path + loop.indexed +"/configuration" ], function ( configuration ) {
+						requirejs([ 
+							package.root_directory +"/"+ package.previous_path + loop.indexed +"/configuration.js" 
+						], function ( configuration ) {
 
 							var package_path, previous_path
 							package_path  = get_package_path()
@@ -100,10 +102,16 @@
 
 		require_package_modules : function ( require ) {
 
-			var module_paths, self
+			var module_paths, self, module_load_paths
 
-			self         = this
-			module_paths = require.load_map.slice(0)
+			self              = this
+			module_paths      = require.load_map.slice(0)
+			module_load_paths = this.nebula.morph.index_loop({
+				subject : module_paths,
+				else_do : function ( loop ) { 
+					return loop.into.concat( require.root_directory +"/"+ loop.indexed +".js" )
+				}
+			})
 
 			requirejs( module_paths, function () {
 				
