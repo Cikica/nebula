@@ -588,4 +588,40 @@ describe("get modules which are allowed from library based on location", functio
 			},
 		})).toEqual({})		
 	})
+
+})
+
+describe("sort module path map to module by name map", function() {
+
+	it("sorts a path map into a name map which has full paths and values of modules that share the same name under it", function() {
+		expect(module.sort_module_path_map_to_module_by_name_map({
+			"some/path"               : [1,2,3],
+			"some/path/here/naw/path" : [2,2,2],
+			"some/path/here/naw"      : { s : 2, d : 4 },
+		})).toEqual({
+			"path" : {
+				"some/path"               : [1,2,3],
+				"some/path/here/naw/path" : [2,2,2],
+			},
+			"naw"  : {
+				"some/path/here/naw"      : { s : 2, d : 4 },
+			}
+		})
+	})
+
+	it("sorts path map into a name map even though the path map may have js postfixes", function() {
+		expect(module.sort_module_path_map_to_module_by_name_map({
+			"../some/path.js"                  : [1,2,3],
+			"../../some/path/here/naw/path.js" : [2,2,2],
+			"../some/path/here/naw.js"         : { s : 2, d : 4 },
+		})).toEqual({
+			"path" : {
+				"../some/path.js"                  : [1,2,3],
+				"../../some/path/here/naw/path.js" : [2,2,2],
+			},
+			"naw"  : {
+				"../some/path/here/naw.js" : { s : 2, d : 4 },
+			}
+		})
+	})
 })

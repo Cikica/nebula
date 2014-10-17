@@ -330,21 +330,37 @@
 		},
 
 		sort_module_path_map_to_module_by_name_map : function ( map ) {
+			var self = this
+			return this.nebula.morph.object_loop({
+				"subject" : map,
+				"into?"   : {},
+				"else_do" : function ( loop ) {
 
-			var path, module_by_name_map
-			module_by_name_map = {}
+					var path = self.get_path_details( loop.key )
+					loop.into[path.module_name]           = ( !loop.into.hasOwnProperty( path.module_name ) ? {} : loop.into[path.module_name] )
+					loop.into[path.module_name][loop.key] = loop.value
 
-			for ( path in map ) {
-				var split_path, module_name
-				split_path  = path.split("/")
-				module_name = split_path[split_path.length-1]
-				if ( !module_by_name_map.hasOwnProperty( module_name ) ) {
-					module_by_name_map[module_name] = {}
+					return {
+						into : loop.into
+					}
 				}
-				module_by_name_map[module_name][path] = map[path]
-			}
+			})
+		},
 
-			return module_by_name_map
+		get_path_details : function ( path ) {
+
+			var split_path, module_name, has_file_extension, file_extension_regex
+
+			file_extension_regex = /(\.json|\.js)/g
+			has_file_extension   = path.match(file_extension_regex)
+			split_path           = path.replace(file_extension_regex, "").split("/")
+			module_name          = split_path[split_path.length-1]
+
+			return { 
+				module_name        : module_name,
+				split_path         : split_path,
+				has_file_extension : has_file_extension,
+			}
 		},
 
 		remove_last_member_of_array_and_return_leftover : function ( array ) {
