@@ -1,5 +1,5 @@
 define({
-	// style: "",
+	style  : "style/test_style_one",
 	name   : "main",
 	main   : "main",
 	start  : { 
