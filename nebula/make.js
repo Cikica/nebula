@@ -20,7 +20,7 @@
 
 			count_object = module.nebula.nebula.make()
 			count_object.call_this_method_on_load_completion( function ( load_map ) {
-
+				console.log( load_map )
 				module.nebula.get.require_package_modules({
 					main_module_name : module.configuration.name,
 					load_map         : load_map.path,
