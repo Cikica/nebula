@@ -81,13 +81,6 @@
 				})
 				
 			})
-			
-			console.log( module.configuration )
-			console.log( module.nebula["require_css/require_css"] )
-			requirejs( ["css!"+module.configuration.style], function ( done ) { 
-				console.log("done")
-			})
-			// console.log( module.nebula["require_css/require_css"].load( module.configuration.style ) )
 
 			module.nebula.get.require_package_configuration({
 				require        : module.configuration, 

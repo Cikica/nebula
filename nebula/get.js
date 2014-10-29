@@ -28,7 +28,7 @@
 					path : package.main_package.name
 				})
 			}
-
+			console.log( package )
 			if ( package.require.package && package.require.package.length > 0 ) {
 				
 				package.previous_path = package.previous_path || ""
