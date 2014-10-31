@@ -23,7 +23,7 @@
 				console.log( load_map )
 				module.nebula.get.require_package_modules({
 					main_module_name : module.configuration.name,
-					load_map         : load_map.path,
+					load_map         : load_map.path.module,
 					root_directory   : module.root,
 					set_global       : function ( object ) {
 

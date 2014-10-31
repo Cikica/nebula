@@ -18,29 +18,33 @@
 			var self
 			self = this
 			return {
-				modules             : [],
-				loaded              : [],
+				modules   : [],
+				load_path : {
+					module : [],
+					style  : []
+				},
 				loading_done        : [],
 				load_completion_map : {
 					path : [],
 					load : []
 				},
 				loading_done_method : {},
-				loading_module : function ( module ) {
+				loading_module      : function ( module ) {
 
 					this.load_completion_map = self.create_load_completion_map({
 						module: this.modules.slice(0),
 						added : module.path,
 						from  : this.load_completion_map
 					})
-					this.modules             = this.modules.concat( module.path )
 
+					this.modules             = this.modules.concat( module.path )
 				},
-				loaded_module  : function ( module ) {
+				loaded_module       : function ( module ) {
 					
 					var all_modules_have_loaded
 
-					this.loaded              = this.loaded.concat( module.returned || [] )
+					this.load_path.module    = this.load_path.module.concat( module.returned.module || [] )
+					this.load_path.style     = this.load_path.style.concat( module.returned.style   || [] )
 					this.load_completion_map = self.create_updated_load_completion_map({
 						map  : this.load_completion_map,
 						path : module.path
@@ -54,7 +58,7 @@
 					if ( all_modules_have_loaded ) {
 						this.loading_done = this.loading_done.concat( true )
 						this.loading_done_method.call({}, {
-							path : this.loaded
+							path : this.load_path
 						})
 					}
 				},				
@@ -146,6 +150,7 @@
 		create_updated_load_completion_map : function ( create ) {
 
 			var path_index, index_is_true, indentical_false_indexes
+
 			path_index               = create.map.path.indexOf( create.path )
 			index_is_true            = create.map.load[path_index]
 			indentical_false_indexes = this.get_common_values_of_two_arrays({
@@ -160,6 +165,7 @@
 					})
 				]
 			})
+
 			if ( index_is_true && indentical_false_indexes.length > 0 ) {
 				create.map.load[indentical_false_indexes[0]] = true
 			} else {

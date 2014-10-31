@@ -71,12 +71,9 @@
 
 							package.sort.loaded_module({
 								path      : package_path,
-								for_group : "module",
-								returned  : self.nebula.morph.index_loop({
-									subject : [].concat( configuration.main, configuration.module ),
-									else_do : function ( loop ) {
-										return loop.into.concat( previous_path + loop.indexed )
-									}
+								returned  : self.nebula.configuration_sort.convert_package_configuration_into_require_paths({
+									previous_path : previous_path,
+									configuration : configuration
 								})
 							})
 
@@ -90,7 +87,13 @@
 			if ( package.main_package ) {
 				package.sort.loaded_module({
 					path     : package.main_package.name,
-					returned : package.main_package.loaded
+					returned : self.nebula.configuration_sort.convert_package_configuration_into_require_paths({
+						previous_path : "",
+						configuration : {
+							main   : [],
+							module : package.main_package.loaded
+						}
+					})
 				})
 			}
 		},
