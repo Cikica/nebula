@@ -19,11 +19,18 @@
 			var count_object
 
 			count_object = module.nebula.nebula.make()
-			count_object.call_this_method_on_load_completion( function ( load_map ) {
-				console.log( load_map )
+			count_object.call_this_method_on_load_completion( function ( given ) {
+
+				// Here should have a way of spliting logic and loading important module 
+				// sections, such as styles, module loads perhaps more
+
+				requirejs( given.path.style, function () { 
+					// console.log("all style loaded sucessfuly")
+				})
+
 				module.nebula.get.require_package_modules({
 					main_module_name : module.configuration.name,
-					load_map         : load_map.path.module,
+					load_map         : given.path.module,
 					root_directory   : module.root,
 					set_global       : function ( object ) {
 
@@ -86,10 +93,7 @@
 				require        : module.configuration, 
 				sort           : count_object,
 				root_directory : module.root,
-				main_package   : { 
-					name   : module.configuration.name,
-					loaded : [].concat( module.configuration.main, module.configuration.module )
-				}
+				main_package   : true
 			})
 		}
 	}
