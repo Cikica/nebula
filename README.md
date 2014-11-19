@@ -12,6 +12,7 @@ Nebula
 *A few qick definitions*
 
 **module** *means* a single file whose logic is wraped in a define()
+
 **package** *means* a directory which is a collection of modules, and has ( at least ) configuration.js, and a main module
 
 #### Including Nebula In A Page ####
