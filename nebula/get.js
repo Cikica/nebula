@@ -25,7 +25,7 @@
 
 			if ( package.main_package ) {
 				package.sort.loading_module({
-					path : package.main_package.name
+					path : package.require.name
 				})
 			}
 
@@ -86,13 +86,10 @@
 
 			if ( package.main_package ) {
 				package.sort.loaded_module({
-					path     : package.main_package.name,
+					path     : package.require.name,
 					returned : self.nebula.configuration_sort.convert_package_configuration_into_require_paths({
 						previous_path : "",
-						configuration : {
-							main   : [],
-							module : package.main_package.loaded
-						}
+						configuration : package.require
 					})
 				})
 			}

@@ -42,7 +42,6 @@
 				loaded_module       : function ( module ) {
 					
 					var all_modules_have_loaded
-
 					this.load_path.module    = this.load_path.module.concat( module.returned.module || [] )
 					this.load_path.style     = this.load_path.style.concat( module.returned.style   || [] )
 					this.load_completion_map = self.create_updated_load_completion_map({

@@ -17,7 +17,14 @@
 		convert_package_configuration_into_require_paths : function ( convert ) {
 
 			var self = this
+			// this should a loop rather than this, with an array specifing
+			// what values in the configuration shoud be taken 
+			// into account when generating require paths
 			return {
+				style  : self.convert_path_definition_to_array({ 
+					definition    : convert.configuration.style || [],
+					previous_path : "css!"+convert.previous_path
+				}),
 				module : self.convert_path_definition_to_array({ 
 					definition    : [].concat( convert.configuration.main, convert.configuration.module ),
 					previous_path : convert.previous_path
@@ -26,7 +33,6 @@
 		},
 
 		convert_path_definition_to_array : function ( path ) {
-			console.log( path )
 			var final_definition
 			final_definition = []
 
