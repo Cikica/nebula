@@ -12,7 +12,7 @@ Nebula
 - Getting Started With Nebula
 - Philosophy Behind
 
-## What Is Nebula ##
+## What Is Nebula
 
 Nebula is a Package Manager Framework. It allows easy inclusion of .js files and packages, which can then be used from within any module 
 in your application.
@@ -23,13 +23,13 @@ Infinite meaning that any package may be made up of any number of packages which
 
 The purpose of Nebula is to make everything reusable and convenient to include.
 
-## How Nebula Works ##
+## How Nebula Works
 
 Nebula works based on the package definition that it follows, which allows it to be recursive.
 
-## Getting Started With Nebula ## 
+## Getting Started With Nebula
 
-## How It Works ##
+## How It Works
 
 *A few qick definitions*
 
