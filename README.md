@@ -7,6 +7,22 @@ Nebula
 
 **Were At Version Alpha7**
 
+( This is more like a list of stuff i need to write )
+
+### Tutorials
+- Setting Up
+- Creating Packages
+- Creating Modules
+- Including Styles, Package, Modules
+ 
+### Topical Guides
+- Philosophy Behind Nebula
+- Configuration
+- Inclusion Philosophy
+- Thinking Of Packages as Molecules
+
+### Reference
+
 - What Is Nebula
 - How Nebula Works
 - Getting Started With Nebula
