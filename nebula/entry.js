@@ -34,7 +34,7 @@
 							"*" : {
 								"css" : paramaters.root_directory + "/nebula/require_css/css.js"
 							}
-						}
+						},
 					})
 
 					requirejs( 

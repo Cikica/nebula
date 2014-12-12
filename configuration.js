@@ -10,10 +10,10 @@ define({
 		test : {}
 	},
 	module : [
-		"library/test"
+		"library/test",
 	],
 	package : [
 		"library/test_package",
-		"library/test_package2"
+		"library/test_package2",
 	]
 })

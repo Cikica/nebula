@@ -21,11 +21,7 @@
 			count_object = module.nebula.nebula.make()
 			count_object.call_this_method_on_load_completion( function ( given ) {
 
-				// Here should have a way of spliting logic and loading important module 
-				// sections, such as styles, module loads perhaps more
-
-				requirejs( given.path.style, function () { 
-					// console.log("all style loaded sucessfuly")
+				requirejs( given.path.style, function () {
 				})
 
 				module.nebula.get.require_package_modules({
