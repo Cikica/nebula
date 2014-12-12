@@ -22,6 +22,13 @@ Nebula
 - Thinking Of Packages as Molecules
 
 ### Reference
+- by module
+    - entry
+    - get
+    - configuration sort
+    - nebula
+    - sort
+    - make
 
 - What Is Nebula
 - How Nebula Works
