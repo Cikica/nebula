@@ -10,6 +10,7 @@ define({
 		test : {}
 	},
 	module : [
+		// "library/ss"
 		"library/test",
 	],
 	package : [
