@@ -17,7 +17,6 @@
 		make : function ( module ) {
 
 			var count_object
-
 			count_object = module.nebula.nebula.make()
 			count_object.call_this_method_on_load_completion( function ( given ) {
 

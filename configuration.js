@@ -9,12 +9,17 @@ define({
 		},
 		test : {}
 	},
-	module : [
-		// "library/ss"
-		"library/test",
+	non_amd : [
+		{ 
+			module  : "library/ss",
+			adapter : "library/ss2",
+		}
+	],
+	module  : [
+		// "library/test",
 	],
 	package : [
-		"library/test_package",
-		"library/test_package2",
+		// "library/test_package",
+		// "library/test_package2",
 	]
 })
