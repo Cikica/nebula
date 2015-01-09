@@ -184,7 +184,7 @@
 				},
 				else_do      : function ( base_loop ) {
 					
-					var given, current_key, current_value, given_key_index_in_given_keys, final_key
+					var given, current_key, current_value, given_key_index_in_given_keys, final_value
 
 					current_key   = key[base_loop.index]
 					current_value = value[base_loop.index]
@@ -205,6 +205,12 @@
 							),
 						}
 					})
+
+					final_value                   = ( 
+						given.value === undefined ? 
+							current_value : 
+							given.value 
+					)
 					given_key_index_in_given_keys = base_loop.map.key.indexOf( given.key )
 					
 					if ( given_key_index_in_given_keys > -1 ) {
@@ -216,6 +222,7 @@
 						console.warn( biject.object )
 						console.warn(".....")
 					}
+
 					return {
 						"length" : base_loop.length,
 						"map"    : {
@@ -224,9 +231,11 @@
 									current_key :
 									given.key
 							)),
-							value : base_loop.map.value.concat(
-								given.value || current_value
-							),
+							value : (
+								final_value && final_value.constructor === Array ? 
+									base_loop.map.value.concat( [ final_value ] ): 
+									base_loop.map.value.concat( final_value )
+							)
 						},
 						"index"        : base_loop.index + 1,
 						"is_done_when" : base_loop.is_done_when,
@@ -241,65 +250,28 @@
 		biject_array : function ( biject ) {
 
 			var self, array, into
-
 			self  = this
-			into  = []
 			array = (
 				biject.array.constructor === HTMLCollection ?
 					self.convert_node_list_to_array( biject.array ) :
 					biject.array
 			)
-			if ( biject.into ) { 
-				into = (
-					biject.into.constructor === HTMLCollection ?
-						self.convert_node_list_to_array( biject.into ) :
-						biject.into
-				)
-			}
 
-			// if ( !biject.into && into.length !== array.length ) {
-			// 	console.warn("")
-			// 	return array
-			// }
-
-			return this.base_loop({
-				"index"      : 0,
-				"length"     : biject.array.length,
-				"subject"    : array,
-				"into"       : into,
-				"result"     : [],
-				is_done_when : function ( base_loop ) {
-					return ( base_loop.index === base_loop.length )
-				},
-				if_done : function ( base_loop ) { 
-					return base_loop.result
-				},
-				else_do : function ( base_loop ) {
-
-					return { 
-						"index"        : base_loop.index + 1,
-						"length"       : base_loop.length ,
-						"subject"      : base_loop.subject,
-						"into"         : base_loop.into,
-						"result"       : base_loop.result.concat(
-							biject.with.call({}, {
-								index   : base_loop.index,
-								indexed : base_loop.subject[base_loop.index],
-								into    : ( base_loop.into.length > 0 ? 
-									{
-										index   : base_loop.index,
-										indexed : base_loop.into[base_loop.index]
-									} : 
-									{}
-								)
-							})
-						),
-						"is_done_when" : base_loop.is_done_when,
-						"if_done"      : base_loop.if_done,
-						"else_do"      : base_loop.else_do,
-					}
-				}
-			})
+			// return this.base_loop({
+			// 	"index"   : 0,
+			// 	"length"  : biject.array.length,
+			// 	"subject" : array,
+			// 	"into"    : biject.into.slice(0),
+			// 	"result"  : [],
+			// 	is_done_when : function ( base_loop ) {
+			// 		return ( base_loop.index === key.length )
+			// 	},
+			// 	if_done : function ( base_loop ) { 
+			// 		return 
+			// 	},
+			// 	else_do      : function ( base_loop ) {
+			// 	}
+			// })
 
 			// return this.index_loop_base({
 			// 	"subject"  : [],
@@ -622,7 +594,7 @@
   				if ( object.hasOwnProperty( property ) ) {
   					var value
   					value = object[property]
-  					if ( value.constructor === Array ) {
+  					if ( value && value.constructor === Array ) {
   						keys = keys.concat([ value ])
   					} else { 
   						keys = keys.concat( value )

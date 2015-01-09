@@ -301,21 +301,11 @@
 			expect(module.biject_array({
 				array : [1,2,3],
 				into  : [4,5,6],
-				with  : function ( loop ) {
+				with  : function ( loop ) { 
 					return loop.indexed + loop.into.indexed
 				}
 			})).toEqual([5,7,9])
 		})
-
-		// it("returns the original array if the into array is not the same size as the subject", function() {
-		// 	expect(module.biject_array({
-		// 		array : [1,2,3],
-		// 		into  : [4,5],
-		// 		with  : function ( loop ) {
-		// 			return loop.indexed + loop.into.indexed
-		// 		}
-		// 	})).toEqual([1,2,3])		
-		// })
 	})
 
 	describe("get object from arrays", function ( ) {
