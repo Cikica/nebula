@@ -18,7 +18,6 @@
 			paramaters = this.get_package_paramaters();
 
 			if ( paramaters.export_as ) {
-
 				this.export_package( paramaters.export_as );
 				this.export_package_methods( paramaters );
 			} 
